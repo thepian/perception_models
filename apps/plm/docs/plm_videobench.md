@@ -40,7 +40,7 @@ accelerate launch --num_processes=8 \
 
 We evaluate PLM against baselines on PLM-VideoBench and
 report breakdowns. We report human performance in the first row.
-| Model            | FGQA | SGQA | RDCap SODA | RCap score | RTLoc meanR | Avg. |
+| Model            | FGQA (MBacc) | SGQA (Acc) | RDCap (SODA) | RCap (Score) | RTLoc (meanR) | Avg. |
 |------------------|------|------|------------|------------|-------------|------|
 | <font color="blue">Human perf.</font>      | <font color="blue">90.9</font>   | <font color="blue">67.9</font>   | <font color="blue">66.6</font>  | <font color="blue">53.9</font>       | <font color="blue">67.8</font>       | <font color="blue">73.9</font>  |
 | GPT-4o           | 61.2 | **63.7** | 20.9       | 35.7       | 33.1        | 51.6 |
