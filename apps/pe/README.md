@@ -163,6 +163,12 @@ See [core.vision_encoder.config](../../core/vision_encoder/config.py) and [core.
 Example coming soon.  Note that the lang and spatial checkpoints additionally have layerscale.
 
 
+---
+
+## Acknowledgement 🙏
+We are thankful to [Open_CLIP](https://github.com/mlfoundations/open_clip) for open-source contributions in CLIP training, and [CLIP_benchmark](https://github.com/LAION-AI/CLIP_benchmark) for CLIP model inference and evaluation. The PE code structure and implementation follow Open_CLIP, and this evaluation is based on CLIP_benchmark. 
+
+
 ## License
 All checkpoints released on this page, unless otherwise specified, are released with the [Apache 2.0 license](https://opensource.org/license/apache-2-0). The code itself is licensed under the parent license of this repository.
 

@@ -1,6 +1,9 @@
+# Copyright (c) Meta Platforms, Inc. and affiliates.
+# All rights reserved.
+# This source code is licensed under the license found in the
+# LICENSE.PE file in the root directory of this source tree.
+
 from math import log, pi
-# from beartype import beartype
-# from beartype.typing import Literal, Union, Optional
 from typing import Literal, Optional, Union
 
 import torch

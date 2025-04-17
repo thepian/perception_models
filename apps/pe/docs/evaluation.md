@@ -1,5 +1,5 @@
 # Zero-Shot ClipBench Evaluation
-Please download the supported datasets and update paths clip_benchmark/datasets/. And run
+Please download the supported datasets directly from the datasets host and update paths in clip_benchmark/datasets/builder.py. And run
 ```bash
 model='PEv1-G14-448'
 CHECKPOINT='PATH_TO_PE_Core_G14_448'
@@ -14,9 +14,12 @@ python -m clip_benchmark.cli eval \
     --force-preprocess-cfg resize_mode=squash
 
 ```
-This script will perform zero-shot classification or retireval benchmarks defined in clip_benchmark/tasks/wds_benchmarks.txt. Examples above includes the following tasks:
+This script will perform zero-shot classification abd retireval benchmarks defined in clip_benchmark/tasks/wds_benchmarks.txt. Examples above includes the following tasks:
 - ImageNet 1K classification
 - ImageNet v2 classification
 - ImageNet Adversial classification
 - MS-COCO retrieval
 - Flickr30K retrieval
+- Kinetics 400 video classification
+- MSR-VTT video retrieval
+
