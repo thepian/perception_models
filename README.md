@@ -7,7 +7,7 @@ Perception Models is a user-friendly repository designed to support the training
 
 ---
 
-* **[Apr-17-25]:** Perception Encoder (PE) are released and Perception Language Model (PLM). [[`Blog`](https://ai.meta.com/blog/meta-fair-updates-perception-localization-reasoning)] :fire::fire:
+* **[Apr-17-25]:** Perception Encoder (PE) and Perception Language Model (PLM) are released. [[`Blog`](https://ai.meta.com/blog/meta-fair-updates-perception-localization-reasoning)] :fire::fire:
 
 ---
 
