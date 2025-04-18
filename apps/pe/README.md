@@ -18,13 +18,13 @@ Perception Encoder (PE) is a family of models that exhibits state-of-the-art per
 
 
 ### Contents
-PE has 3 types of checkpoints, each acceling in a different area of computer vision:
+PE has 3 types of checkpoints, each excelling in a different area of computer vision:
  - [PE core](#perception-encoder-core): a state-of-the-art CLIP model for zero-shot image and video classification as well as image and video retrieval.
  - [PE lang](#perception-encoder-language): a state-of-the-art large language model aligned vision encoder that enables our open-data [Perception Language Model (PLM)](../plm/README.md) to compete at the forefront of the field.
  - [PE spatial](#perception-encoder-spatial): a state-of-the-art spatially tuned model that can outperform the best spatial models for dense prediction tasks like detection, depth estimation, and tracking.
 
 Finally, we also release a dataset we collected in the process of creating our novel video data engine:
- - [PE Video Dataset (PVD)](#pe-video-dataset): an diverse set of 1M high quality datasets with accompanying metadata as well as 120K human-refined detailed video captions.
+ - [PE Video Dataset (PVD)](#pe-video-dataset-pvd): an diverse set of 1M high quality datasets with accompanying metadata as well as 120K human-refined detailed video captions.
 
 
 :construction: This repository is under construction! :construction:
