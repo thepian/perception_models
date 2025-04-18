@@ -3,6 +3,38 @@
 """
 Include all available vision encoder configurations.
 """
+from dataclasses import dataclass
+
+@dataclass
+class PEConfig:
+    image_size: int = 448
+    patch_size: int = 14
+    width: int = 1536
+    layers: int = 50
+    heads: int = 16
+    head_width: int = 96
+    mlp_ratio: float = 5.833333333333333
+
+    ls_init_value: float = None
+    drop_path: float = 0.0
+
+    abs_pos_embed: bool = True
+    embed_cls_token: bool = False
+    use_rope2d: bool = True
+
+    output_dim: int = 1024
+
+    pool_type: str = "attn"
+    attn_pooler_heads: int = 8
+
+    use_ln_pre: bool = True
+    use_ln_post: bool = True
+    vision_select_feature: str = 'pooled' # "patch" or "pooled
+
+    img_mean: tuple = (0.5, 0.5, 0.5)
+    img_std: tuple = (0.5, 0.5, 0.5)
+
+
 
 PEV1_SETTINGS = {
     # CORE
@@ -39,7 +71,6 @@ PEV1_SETTINGS = {
         "embed_cls_token": True,
         "abs_pos_embed": True,
     },
-
     # LANG
     "pev1_lang_G14_448": {
         "image_size": 448,
@@ -55,25 +86,21 @@ PEV1_SETTINGS = {
         "vision_select_feature": "patch",
         "ls_init_value": 0.1,
     },
-
     "pev1_lang_L14_448": {
-        "image_size": 448
-        "patch_size": 14
-        "width": 1024
-        "layers": 23
-        "heads": 16
-        "embed_cls_token": True
-        "abs_pos_embed": True
-        "mlp_ratio": 4.0
-        "ls_init_value": 0.1
-        "vision_select_feature": "patch"
-        "use_ln_post": False
-        "pool_type": "none"
-        "remove_class_token_output": True
-    }
-
-
-
+        "image_size": 448,
+        "patch_size": 14,
+        "width": 1024,
+        "layers": 23,
+        "heads": 16,
+        "embed_cls_token": True,
+        "abs_pos_embed": True,
+        "mlp_ratio": 4.0,
+        "ls_init_value": 0.1,
+        "vision_select_feature": "patch",
+        "use_ln_post": False,
+        "pool_type": "none",
+        "remove_class_token_output": True,
+    },
     # SPATIAL
     "pev1_spatial_G14_448": {
         "image_size": 448,
@@ -89,8 +116,6 @@ PEV1_SETTINGS = {
         "vision_select_feature": "patch",
         "ls_init_value": 0.1,
     },
-
-
 }
 
 
@@ -108,8 +133,8 @@ PEV1_CLIP_SETTINGS = {
             "abs_pos_embed": True,
         },
         'text':{
-            "context_length":72,
-            "vocab_size" 49408,
+            "context_length": 72,
+            "vocab_size": 49408,
             "width": 1280,
             'output_dim': 1280,
             "layers": 24,
@@ -131,8 +156,8 @@ PEV1_CLIP_SETTINGS = {
             "abs_pos_embed": True,
         },
         'text':{
-            "context_length":32,
-            "vocab_size" 49408,
+            "context_length": 32,
+            "vocab_size": 49408,
             "width": 1024,
             'output_dim': 1024,
             "layers": 24,
@@ -155,8 +180,8 @@ PEV1_CLIP_SETTINGS = {
             "abs_pos_embed": True,
         },
         'text':{
-            "context_length":32,
-            "vocab_size" 49408,
+            "context_length": 32,
+            "vocab_size": 49408,
             "width": 1024,
             'output_dim': 1024,
             "layers": 24,

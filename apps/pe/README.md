@@ -160,9 +160,43 @@ Please refer to [`docs/evaluation.md`](docs/evaluation.md) for the following ben
 
 
 ### 3. Loading PE lang / PE spatial Checkpoints
-See [core.vision_encoder.config](../../core/vision_encoder/config.py) and [core.vision_encoder.pev1](../../core/vision_encoder/pev1.py).
-Example coming soon.  Note that the lang and spatial checkpoints additionally have layerscale.
+For using PE-Lang and PE-Spatial models with additional layer scale. We provide a sample code for PE-Spatial as follows:
+```python
+import torch
+from dataclasses import dataclass
+from core.vision_encoder.pev1 import VisionTransformer
+from core.vision_encoder.config import PEConfig, PEV1_SETTINGS
 
+pev1_config=PEV1_SETTINGS['pev1_spatial_G14_448']
+config = PEConfig(**pev1_config)
+ckpt_path='/checkpoint/vision_encoder/pe_release/pev1/PE-Spatial-G14-448.pt'
+
+model = VisionTransformer(
+    ### load pre-trained PE
+    load_ckpt=True,
+    ckpt_path=ckpt_path,
+    ### model config
+    image_size=config.image_size,
+    patch_size=config.patch_size,
+    width=config.width,
+    layers=config.layers,
+    heads=config.heads,
+    embed_cls_token=config.embed_cls_token,
+    abs_pos_embed=config.abs_pos_embed,
+    mlp_ratio=config.mlp_ratio,
+    pool_type=config.pool_type,
+    use_ln_post=config.use_ln_post,
+    vision_select_feature=config.vision_select_feature,
+    ls_init_value=config.ls_init_value,    
+    )
+    
+model.cuda()
+input = torch.rand(8,3,224,224).cuda()
+output = model(input)
+print(output.shape) # torch.Size([8, 256, 1536])
+```
+
+Please refer to [core.vision_encoder.config](../../core/vision_encoder/config.py) and [core.vision_encoder.pev1](../../core/vision_encoder/pev1.py) for more details. 
 
 ---
 
