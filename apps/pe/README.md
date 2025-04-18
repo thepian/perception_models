@@ -130,7 +130,7 @@ pretrained = 'path/to/PE-Core-G14-448.pt'
 
 model, _, preprocess = create_model_and_transforms(
     model_name,
-    pretrained=pretrained,
+    pretrained = pretrained,
 )
 model = model.cuda()
 tokenizer = get_tokenizer(model_name)
@@ -167,27 +167,27 @@ from dataclasses import dataclass
 from core.vision_encoder.pev1 import VisionTransformer
 from core.vision_encoder.config import PEConfig, PEV1_SETTINGS
 
-pev1_config=PEV1_SETTINGS['pev1_spatial_G14_448']
+pev1_config = PEV1_SETTINGS['pev1_spatial_G14_448']
 config = PEConfig(**pev1_config)
-ckpt_path='/checkpoint/vision_encoder/pe_release/pev1/PE-Spatial-G14-448.pt'
+ckpt_path = 'path/to/PE-Spatial-G14-448.pt'
 
 model = VisionTransformer(
     ### load pre-trained PE
-    load_ckpt=True,
-    ckpt_path=ckpt_path,
+    load_ckpt = True,
+    ckpt_path = ckpt_path,
     ### model config
-    image_size=config.image_size,
-    patch_size=config.patch_size,
-    width=config.width,
-    layers=config.layers,
+    image_size = config.image_size,
+    patch_size = config.patch_size,
+    width = config.width,
+    layers = config.layers,
     heads=config.heads,
-    embed_cls_token=config.embed_cls_token,
-    abs_pos_embed=config.abs_pos_embed,
-    mlp_ratio=config.mlp_ratio,
-    pool_type=config.pool_type,
-    use_ln_post=config.use_ln_post,
-    vision_select_feature=config.vision_select_feature,
-    ls_init_value=config.ls_init_value,    
+    embed_cls_token = config.embed_cls_token,
+    abs_pos_embed = config.abs_pos_embed,
+    mlp_ratio = config.mlp_ratio,
+    pool_type = config.pool_type,
+    use_ln_post = config.use_ln_post,
+    vision_select_feature = config.vision_select_feature,
+    ls_init_value = config.ls_init_value,    
     )
     
 model.cuda()
