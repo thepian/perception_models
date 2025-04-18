@@ -160,7 +160,7 @@ Please refer to [`docs/evaluation.md`](docs/evaluation.md) for the following ben
 
 
 ### 3. Loading PE lang / PE spatial Checkpoints
-For using PE-Lang and PE-Spatial models with additional layer scale. We provide a sample code for PE-Spatial as follows:
+For loading and using pretrained PE-Lang and PE-Spatial models with an additional layer scale, we provide a sample code for PE-Spatial as follows:
 ```python
 import torch
 from dataclasses import dataclass
