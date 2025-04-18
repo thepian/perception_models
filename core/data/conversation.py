@@ -94,10 +94,10 @@ class Conversation:
                     "Please fix your jsonl file."
                 )
         # Add bos and eos token at the start and end of the coversation (TODO (Maaz): Is there a better way to do it?)
-        conv_dict_list[0]["user"] = f"{self.bos_token}{conv_dict_list[0]["user"]}"
+        conv_dict_list[0]["user"] = f"{self.bos_token}{conv_dict_list[0]['user']}"
         conv_dict_list[-1][
             "assistant"
-        ] = f"{conv_dict_list[-1]["assistant"]}{self.eos_token}"
+        ] = f"{conv_dict_list[-1]['assistant']}{self.eos_token}"
 
         return conv_dict_list
 
