@@ -2,14 +2,11 @@
 
 **[Meta AI Research, FAIR](https://ai.facebook.com/research)**
 
----
-Perception Models is a user-friendly repository designed to support the training, inference, and evaluation of Perception Language Model (PLM) and Perception Encoder (PE). It is designed to be modular and easy to expand and experiment with.
+Perception Models is home to the state-of-the-art for image and video _perception_: Perception Encoder (PE) for encoding and Perception Language Model (PLM) for decoding. We designed Perception Models as a user-friendly repository designed to support the training, inference, and evaluation of these two models, with an emphasis on making the code modular and easy to expand and experiment with.
 
----
 
 * **[Apr-17-25]:** Perception Encoder (PE) and Perception Language Model (PLM) are released. [[`Blog`](https://ai.meta.com/blog/meta-fair-updates-perception-localization-reasoning)] :fire::fire:
 
----
 
 ## Perception Encoder (PE)
 
@@ -23,7 +20,6 @@ See [`apps/pe/README.md`](apps/pe/README.md) for more information and how to get
 
 
 
----
 
 ## Perception Language Model (PLM)
 [![Hugging Face Collection](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Collection-blue)](https://huggingface.co/collections/facebook/perception-lm-67f9783f171948c383ee7498) [![Paper](https://img.shields.io/badge/Technical%20Report-PerceptionLM-b31b1b.svg)](https://ai.meta.com/research/publications/perceptionlm-open-access-data-and-models-for-detailed-visual-understanding)
@@ -34,7 +30,6 @@ PerceptionLM (PLM) is a family of open and fully reproducible models to facilita
 
 See [`apps/plm/README.md`](apps/plm/README.md) for details and how to get started!
 
----
 
 ## Installation :wrench:
 ```shell
@@ -55,7 +50,6 @@ pip install -e .
 ```
 This will install an editable version of repo, allowing you to make changes to the code without needing to reinstall the package every time.
 
----
 
 ## 🙏 Acknowledgement
 We are thankful to [Meta Lingua](https://github.com/facebookresearch/lingua) for releasing their code as open-source contributions. The code structure and code implementation of the LLM is directly forked from [Meta Lingua](https://github.com/facebookresearch/lingua). We are also thankful to [Open_CLIP](https://github.com/mlfoundations/open_clip) for open-source contributions in CLIP training, and [CLIP_benchmark](https://github.com/LAION-AI/CLIP_benchmark) for CLIP model evaluation. 
