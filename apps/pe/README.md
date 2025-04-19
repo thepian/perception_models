@@ -11,10 +11,12 @@ Daniel Bolya*, Po-Yao Huang*, Peize Sun*, Jang Hyun Cho*, Andrea Madotto*, Chen 
 \* Joint First Author  
 _[HuggingFace](https://huggingface.co/collections/facebook/perception-encoder-67f977c9a65ca5895a7f6ba1)_ | _[Blog](ai.meta.com/blog/meta-fair-updates-perception-localization-reasoning)_ | _[GitHub](https://github.com/facebookresearch/perception_models)_ | _[arXiv](https://arxiv.org/abs/2504.13181)_ | _[BibTeX](#citation)_
 
-<img src="docs/teaser.png" style="width: 90%; margin: 0 auto; display: block;" />
+<img src="docs/assets/teaser.png" style="width: 90%; margin: 0 auto; display: block;" />
 <br />
 
 Perception Encoder (PE) is a family of models that exhibits state-of-the-art performance on a large variety of vision tasks. By using a robust contrastive pretraining recipe and finetuning on synthetically aligned videos, PE not only outperforms all existing models on classification and retrieval, but it also internally produces strong, general features that scale for downstream tasks. PE unlocks the ability for large-scale contrastive pretraining to transfer to downstream tasks with alignment tuning to capitalize on those general features.
+
+The result is an extremely powerful family of checkpoints: PE core can outperform SigLIP2 on Image CLIP and InternVideo2 on Video CLIP; PE lang can be used to outperform QwenVL2.5 and InternVL3 on multimodal language modeling; and PE spatial can outperform DINOv2 on dense prediction tasks—all following the same, easily scalable contrastive pretraining.
 
 
 ### Contents
@@ -26,6 +28,7 @@ PE has 3 types of checkpoints, each excelling in a different area of computer vi
 Finally, we also release a dataset we collected in the process of creating our novel video data engine:
  - [PE Video Dataset (PVD)](#pe-video-dataset-pvd): an diverse set of 1M high quality datasets with accompanying metadata as well as 120K human-refined detailed video captions.
 
+If you want to get started right away check out the [usage](#usage) section!
 
 :construction: This repository is under construction! :construction:
 
@@ -90,11 +93,11 @@ PE spatial similarly takes the strong spatial performance from the intermediate 
 
 And despite being a short finetuning step using PE core's intermediate layers as a teacher (a pure CLIP model with a global loss) plus a little bit of refinement with SAM, the resulting feature space is quite detailed and well-aligned. Here we picture the PCA of the last layer features mapped to LCh color space (see the paper for more details):
 
-<img src="docs/spatial_features.png" style="width: 80%; margin: 0 auto; padding-top: 20px; padding-bottom: 20px; display: block;" />
+<img src="docs/assets/spatial_features.png" style="width: 80%; margin: 0 auto; padding-top: 20px; padding-bottom: 20px; display: block;" />
 
 PE spatial also has nuanced semantic correspondences between objects thanks to its CLIP pretraining. Here we show again PCA but only for the tokens not masked. PE spatial shows correspondence between parts like the first image cats' heads, backs, and legs. Additionally, PE spatial can show more nuanced correspondences like for the last two images, where the red/blue directions still denote parts, but the lightness/darkness directions now indicate semantics (i.e., dog/cat breed):  
 
-<img src="docs/spatial_correspondence.png" style="width: 80%; margin: 0 auto; padding-top: 20px; padding-bottom: 20px; display: block;" />
+<img src="docs/assets/spatial_correspondence.png" style="width: 80%; margin: 0 auto; padding-top: 20px; padding-bottom: 20px; display: block;" />
 
 We release one checkpoint for PE spatial so far:  
 | Encoder | Checkpoint | ADE20k <br/> Linear Probe <br/> 448px w/o TTA | LVIS <br /> Mask R-CNN 1024px <br /> Box / Mask mAP | COCO <br/> DETA 1536px <br /> Box mAP |
@@ -104,7 +107,7 @@ We release one checkpoint for PE spatial so far:
 See paper for full set of evaluations and fair comparison to other works.
 
 ## PE Video Dataset (PVD)
-In the process of developing the video data engine we use for PE core, we have collected a high-quality video dataset that contains 1M diverse videos with high visual fidelity and large resolution, split into 10 high level categories. We also annotated 120K samples with the highest amount of motiotion with our video captioning data engine and further asked human annotators to refine the captions. You can find more information about PVD [here](https://ai.meta.com/datasets/pe-video/).
+In the process of developing the video data engine we use for PE core, we have collected a high-quality video dataset that contains 1M diverse videos with high visual fidelity and large resolution, split into 10 high level categories. We also annotated 120K samples with the highest amount of motiotion with our video captioning data engine and further asked human annotators to refine the captions. You can find more information about and download PVD [here](https://ai.meta.com/datasets/pe-video/).
 
 
 # Usage
@@ -122,32 +125,29 @@ Perception Encoder follows the same structure as [open_clip](https://github.com/
 
 ```python
 import torch
-from core.vision_encoder.factory import create_model_and_transforms, get_tokenizer
 from PIL import Image
+import core.vision_encoder.pe as pe
+import core.vision_encoder.transforms as transforms
 
-model_name = 'PEv1-G14-448'
-pretrained = 'path/to/PE-Core-G14-448.pt'
+print("CLIP configs:", pe.CLIP.available_configs())
+# CLIP configs: ['PE-Core-G14-448', 'PE-Core-L14-336', 'PE-Core-B16-224']
 
-model, _, preprocess = create_model_and_transforms(
-    model_name,
-    pretrained = pretrained,
-)
+model = pe.CLIP.from_config("PE-Core-L14-336", pretrained=True)  # Downloads from HF
 model = model.cuda()
-tokenizer = get_tokenizer(model_name)
 
-image = preprocess(Image.open("docs/cat.png")).unsqueeze(0).cuda()
+preprocess = transforms.get_image_transform(model.image_size)
+tokenizer = transforms.get_text_tokenizer(model.context_length)
+
+image = preprocess(Image.open("docs/assets/cat.png")).unsqueeze(0).cuda()
 text = tokenizer(["a diagram", "a dog", "a cat"]).cuda()
 
 with torch.no_grad(), torch.autocast("cuda"):
-    image_features = model.encode_image(image)
-    text_features = model.encode_text(text)
-    image_features /= image_features.norm(dim=-1, keepdim=True)
-    text_features /= text_features.norm(dim=-1, keepdim=True)
-    text_probs = (100.0 * image_features @ text_features.T).softmax(dim=-1)
+    image_features, text_features, logit_scale = model(image, text)
+    text_probs = (logit_scale * image_features @ text_features.T).softmax(dim=-1)
 
 print("Label probs:", text_probs)  # prints: [[0.0, 0.0, 1.0]]
 ```
-
+For a in-depth demo for image and video feature extraction, please refer to our [demo notebook](docs/demo.ipynb).
 
 
 
@@ -159,44 +159,27 @@ Please refer to [`docs/evaluation.md`](docs/evaluation.md) for the following ben
 - zero-shot video retrieval
 
 
-### 3. Loading PE lang / PE spatial Checkpoints
-For loading and using pretrained PE-Lang and PE-Spatial models with an additional layer scale, we provide a sample code for PE-Spatial as follows:
+### 3. Loading PE core / PE lang / PE spatial Vision Encoder Checkpoints
+Loading the vision encoders for PE core, PE lang, and PE spatial for downstream use is similar to the CLIP checkpoints, just using `VisionTransformer` instead. Here you can additionally load PE lang and PE spatial for downstream feature encoding.
 ```python
 import torch
-from dataclasses import dataclass
-from core.vision_encoder.pev1 import VisionTransformer
-from core.vision_encoder.config import PEConfig, PEV1_SETTINGS
+from PIL import Image
+import core.vision_encoder.pe as pe
+import core.vision_encoder.transforms as transforms
 
-pev1_config = PEV1_SETTINGS['pev1_spatial_G14_448']
-config = PEConfig(**pev1_config)
-ckpt_path = 'path/to/PE-Spatial-G14-448.pt'
+print("PE configs:", pe.VisionTransformer.available_configs())
+# PE configs: ['PE-Core-G14-448', 'PE-Core-L14-336', 'PE-Core-B16-224', 'PE-Lang-G14-448', 'PE-Lang-L14-448', 'PE-Spatial-G14-448']
 
-model = VisionTransformer(
-    ### load pre-trained PE
-    load_ckpt = True,
-    ckpt_path = ckpt_path,
-    ### model config
-    image_size = config.image_size,
-    patch_size = config.patch_size,
-    width = config.width,
-    layers = config.layers,
-    heads=config.heads,
-    embed_cls_token = config.embed_cls_token,
-    abs_pos_embed = config.abs_pos_embed,
-    mlp_ratio = config.mlp_ratio,
-    pool_type = config.pool_type,
-    use_ln_post = config.use_ln_post,
-    vision_select_feature = config.vision_select_feature,
-    ls_init_value = config.ls_init_value,    
-    )
-    
-model.cuda()
-input = torch.rand(8,3,224,224).cuda()
-output = model(input)
-print(output.shape) # torch.Size([8, 256, 1536])
+model = pe.VisionTransformer.from_config("PE-Lang-L14-448", pretrained=True)  # Loads from HF
+model = model.cuda()
+
+preprocess = transforms.get_image_transform(model.image_size)
+image = preprocess(Image.open("docs/assets/cat.png")).unsqueeze(0).cuda()
+
+out = model.forward_features(image)  # pass layer_idx=<idx> to get a specific layer's output!
+print(out.shape)
+# torch.Size([1, 1025, 1024])
 ```
-
-Please refer to [core.vision_encoder.config](../../core/vision_encoder/config.py) and [core.vision_encoder.pev1](../../core/vision_encoder/pev1.py) for more details. 
 
 ---
 
