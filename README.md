@@ -5,6 +5,7 @@
 Perception Models is home to the state-of-the-art for image and video _perception_: Perception Encoder (PE) for encoding and Perception Language Model (PLM) for decoding. We designed Perception Models as a user-friendly repository to support the training, inference, and evaluation of these two models, with an emphasis on making the code modular and easy to expand and experiment with.
 
 
+* **[Apr-18-25]:** Perception Language Model (PLM) and PLM-VideoBench are added to lmms-eval. This makes it easy to reproduce PLM results and allows you to evaluate on the PLM-VideoBench. [[`lmms-eval`](https://github.com/EvolvingLMMs-Lab/lmms-eval/pull/638)] :fire::fire:
 * **[Apr-17-25]:** Perception Encoder (PE) and Perception Language Model (PLM) are released. [[`Blog`](https://ai.meta.com/blog/meta-fair-updates-perception-localization-reasoning)] :fire::fire:
 
 
