@@ -181,8 +181,6 @@ print(out.shape)
 # torch.Size([1, 1025, 1024])
 ```
 
----
-
 ## Acknowledgement 🙏
 We are thankful to [Open_CLIP](https://github.com/mlfoundations/open_clip) for open-source contributions in CLIP training, and [CLIP_benchmark](https://github.com/LAION-AI/CLIP_benchmark) for CLIP model inference and evaluation. The PE code structure and implementation follow Open_CLIP, and this evaluation is based on CLIP_benchmark. 
 

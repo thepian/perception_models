@@ -2,7 +2,7 @@
 
 **[Meta AI Research, FAIR](https://ai.facebook.com/research)**
 
-Perception Models is home to the state-of-the-art for image and video _perception_: Perception Encoder (PE) for encoding and Perception Language Model (PLM) for decoding. We designed Perception Models as a user-friendly repository designed to support the training, inference, and evaluation of these two models, with an emphasis on making the code modular and easy to expand and experiment with.
+Perception Models is home to the state-of-the-art for image and video _perception_: Perception Encoder (PE) for encoding and Perception Language Model (PLM) for decoding. We designed Perception Models as a user-friendly repository to support the training, inference, and evaluation of these two models, with an emphasis on making the code modular and easy to expand and experiment with.
 
 
 * **[Apr-17-25]:** Perception Encoder (PE) and Perception Language Model (PLM) are released. [[`Blog`](https://ai.meta.com/blog/meta-fair-updates-perception-localization-reasoning)] :fire::fire:
