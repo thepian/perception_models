@@ -1,4 +1,4 @@
-# Perception Models: An Easy to Use Repository for Perception Tasks
+# Perception Models: Powerful Models for Image and Video Perception
 
 **[Meta AI Research, FAIR](https://ai.facebook.com/research)**
 
