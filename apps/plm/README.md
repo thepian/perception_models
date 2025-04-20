@@ -61,8 +61,8 @@ A group of individuals are skipping rope in a coordinated routine on a basketbal
 ## Tutorials 
 
 For more task-specific usecases, check out our notebook tutorials:
-- [Image and video captioning](./collab_demos/image_and_video_captioning.ipynb) 
-- [Image grounding and region captioning](./collab_demos/image_grounding.ipynb)
+- [Image and video captioning](./notebook_demos/image_and_video_captioning.ipynb) 
+- [Image grounding and region captioning](./notebook_demos/image_grounding.ipynb)
 
 ## PLM Image Benchmark Results
 
