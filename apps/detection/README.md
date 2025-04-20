@@ -88,12 +88,12 @@ bash scripts/evaluate_local.sh --config-file projects/ViTDet/configs/COCO/mask_r
 <th valign="bottom">box(TTA)<br/>AP</th>
 <th valign="bottom">download</th>
 <!-- TABLE BODY -->
-<!-- ROW: mask_rcnn_vitdet_l_100ep -->
+<!-- ROW: DETA -->
  <tr><td align="left">DETA</td>
 <td align="center">PE spatial G</td>
-<td align="center"> - </td>
-<td align="center"> - </td>
-<td align="center"> - </td>
+<td align="center"> 65.1 </td>
+<td align="center"> 65.7 </td>
+<td align="center"> Coming soon </td>
 </tr>
 </tbody></table>
 
