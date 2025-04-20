@@ -29,3 +29,4 @@ tokenizers==0.21.1
 webdataset==0.2.111
 fsspec
 datatrove
+ftfy
