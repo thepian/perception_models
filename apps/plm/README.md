@@ -58,6 +58,12 @@ python apps/plm/generate.py \
 A group of individuals are skipping rope in a coordinated routine on a basketball court. They are standing in a line, with each person holding a rope and performing a synchronized movement, with their arms extended and their bodies in motion. The court has a blue center circle and white lines marking the playing area, and spectators are seated on the sidelines watching the performance.
 ```
 
+## Tutorials 
+
+For more task-specific usecases, check out our notebook tutorials:
+- [Image and video captioning](./collab_demos/image_and_video_captioning.ipynb) 
+- [Image grounding and region captioning](./collab_demos/image_grounding.ipynb)
+
 ## PLM Image Benchmark Results
 
 | Model  | DocVQA | ChartQA | TextVQA | InfoQA | AI2D  | OCRBench | COCO | Nocap | Flickr | MMMU | VQAv2 | OKVQA | VizWiz | MME | SEED | BLINK | CVBench | RealWorldQA | VSR | POPE |
