@@ -93,7 +93,7 @@ bash scripts/evaluate_local.sh --config-file projects/ViTDet/configs/COCO/mask_r
 <td align="center">PE spatial G</td>
 <td align="center"> 65.1 </td>
 <td align="center"> 65.7 </td>
-<td align="center"> Coming soon </td>
+<td align="center"><a href="https://huggingface.co/facebook/PE-Detection/resolve/main/deta_coco.pth">model</a></td>
 </tr>
 </tbody></table>
 
