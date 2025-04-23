@@ -14,7 +14,7 @@ Perception Models is home to the state-of-the-art for image and video _perceptio
 [![Paper](https://img.shields.io/badge/Paper-Perception%20Encoder-b31b1b.svg)](https://ai.meta.com/research/publications/perception-encoder-the-best-visual-embeddings-are-not-at-the-output-of-the-network) 
 [![Paper](https://img.shields.io/badge/arXiv-2504.13181-brightgreen.svg?style=flat-square)](https://arxiv.org/abs/2504.13181)
 [![Hugging Face Collection](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Collection-blue)](https://huggingface.co/collections/facebook/perception-encoder-67f977c9a65ca5895a7f6ba1)
-[![Colab](https://img.shields.io/badge/Google%20Colab-Tutorials-red)](docs/pe_demo.ipynb)
+[![Colab](https://img.shields.io/badge/Google%20Colab-Tutorials-red)](apps/pe/docs/pe_demo.ipynb)
 [![Model License](https://img.shields.io/badge/Model_License-Apache_2.0-olive)](https://opensource.org/licenses/Apache-2.0)
 
 Perception Encoder (PE) is an extremely powerful and versatile family of vision encoders for both images and video: PE core can outperform SigLIP2 on Image CLIP and InternVideo2 on Video CLIP; PE lang can be used to outperform QwenVL2.5 and InternVL3 on vision language modeling; and PE spatial can outperform DINOv2 on dense prediction tasks. And all of this follows the same, easily scalable contrastive pretraining.
