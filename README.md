@@ -22,21 +22,24 @@ This repo is the home to the state-of-the-art for image and video _perception_: 
 
 ### Models
 PE has 3 types of checkpoints, each excelling in a different area of computer vision:
- - [PE core](#perception-encoder-core): a state-of-the-art CLIP model for zero-shot image and video classification as well as image and video retrieval.
- - [PE lang](#perception-encoder-language): a state-of-the-art large language model (LLM) aligned vision encoder that enables our open-data [Perception Language Model (PLM)](apps/plm/README.md) to compete at the forefront of the field.
- - [PE spatial](#perception-encoder-spatial): a state-of-the-art spatially tuned model that can outperform the best spatial models for dense prediction tasks like detection, depth estimation, and tracking.
+ - [PE core](#perception-encoder-core): a CLIP model excels in vision-language tasks such as zero-shot image and video classification and video retrieval.
+ - [PE lang](#perception-encoder-language): a LLM-aligned PE that powers [PLM)](https://arxiv.org/abs/2504.13180) to compete at the forefront of multimodal LLM benchmarks.
+ - [PE spatial](#perception-encoder-spatial): a spatially tuned PE that outperforms best spatial models for vision-centric tasks such as detection, depth estimation, and tracking.
 
+#### Vision-Language Benchmarks
 | Model | Checkpoint | IN-1k | IN-v2 | IN-A | ObjectNet | COCO-T2I | Kinetics-400 | VTT-T2I
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | **B/16** 224px | [PE-Core-B16-224](https://huggingface.co/facebook/PE-Core-B16-224) | 78.4 | 71.7 | 62.4 |  71.9 | 50.9 | 65.6 | 47.6 |
 | **L/14** 336px | [PE-Core-L14-336](https://huggingface.co/facebook/PE-Core-L14-336) | 83.5 | 77.9 | 89.0 | 84.7 | 57.1 | 73.4 | 50.3  |
 | **G/14** 448px | [PE-Core-G14-448](https://huggingface.co/facebook/PE-Core-G14-448) | 85.4 | 80.2 | 92.6 | 88.2 | 58.1 | 76.9 | 51.2  |
 
+#### Multimodal LLM Benchmarks
 | Encoder | Checkpoint | Doc VQA | InfoQA | TextVQA | MVBench | PerceptionTest | EgoSchema |
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | **L/14** 448px | [PE-Lang-L14-448](https://huggingface.co/facebook/PE-Lang-L14-448) | 81.9 | 46.4 | 73.0 | 52.3 | 54.7 | 59.8 |
 | **G/14** 448px | [PE-Lang-G14-448](https://huggingface.co/facebook/PE-Lang-G14-448) | 84.4 | 48.3 | 75.2 | 52.4 | 56.0 | 62.0 |
 
+#### Vision-centric Benchmarks
 | Encoder | Checkpoint | ADE20k <br/> Linear Probe <br/> 448px w/o TTA | LVIS <br /> Mask R-CNN 1024px <br /> Box / Mask mAP | COCO <br/> DETA 1536px <br /> Box mAP |
 |:---:|:---:|:---:|:---:|:---:|
 | **G/14** 448px | [PE-Spatial-G14-448](https://huggingface.co/facebook/PE-Spatial-G14-448) | 49.3 | 54.2 / 49.3 | 65.5
@@ -44,7 +47,7 @@ PE has 3 types of checkpoints, each excelling in a different area of computer vi
 
 <div align="center">
   <img src="apps/pe/docs/assets/spatial_correspondence.png" style="width: 80%; margin: 0 auto; padding-top: 20px; padding-bottom: 20px; display: block;" />
-  
+
   Visualization of PCA of non-maked visual tokens, mapped to RGB values.
 </div>
 
