@@ -3,6 +3,7 @@
 [![Paper](https://img.shields.io/badge/Paper-Perception%20Encoder-b31b1b.svg)](https://ai.meta.com/research/publications/perception-encoder-the-best-visual-embeddings-are-not-at-the-output-of-the-network) 
 [![Paper](https://img.shields.io/badge/arXiv-2504.13181-brightgreen.svg?style=flat-square)](https://arxiv.org/abs/2504.13181)
 [![Hugging Face Collection](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Collection-blue)](https://huggingface.co/collections/facebook/perception-encoder-67f977c9a65ca5895a7f6ba1)
+[![Colab Demo](https://img.shields.io/static/v1?label=Demo&message=Google%20Colab&logo=google&color=orange)(https://colab.research.google.com/github/facebookresearch/perception_models/blob/main/apps/pe/docs/pe_demo.ipynb)]
 [![Model License](https://img.shields.io/badge/Model_License-Apache_2.0-olive)](https://opensource.org/licenses/Apache-2.0)
 
 This is the official implementation of **Perception Encoder** from our paper:  
@@ -147,7 +148,7 @@ with torch.no_grad(), torch.autocast("cuda"):
 
 print("Label probs:", text_probs)  # prints: [[0.0, 0.0, 1.0]]
 ```
-For a in-depth demo for image and video feature extraction, please refer to our [demo notebook](docs/demo.ipynb).
+For a in-depth demo for image and video feature extraction, please refer to our [demo notebook](docs/pe_demo.ipynb).
 
 
 
