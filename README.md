@@ -79,7 +79,8 @@ with torch.no_grad(), torch.autocast("cuda"):
 print("Label probs:", text_probs)  # prints: [[0.0, 0.0, 1.0]]
 ```
 
-Please see [`apps/pe/README.md`](apps/pe/README.md) for more information!
+> [!TIP]
+> See [`apps/pe/README.md`](apps/pw/README.md) for details and how to get started!
 
 
 ## Perception Language Model (PLM)
