@@ -1,10 +1,21 @@
 # Perception Language Model (PLM)
-[![Hugging Face Collection](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face%20Collection-Models,%20Data,%20and%20Benchmarks-blue)](https://huggingface.co/collections/facebook/perception-lm-67f9783f171948c383ee7498)
-[![Paper](https://img.shields.io/badge/Technical%20Report-PerceptionLM-b31b1b.svg)](https://ai.meta.com/research/publications/perceptionlm-open-access-data-and-models-for-detailed-visual-understanding)
+[![Paper](https://img.shields.io/badge/Paper-PerceptionLM-b31b1b.svg)](https://ai.meta.com/research/publications/perceptionlm-open-access-data-and-models-for-detailed-visual-understanding)
 [![Paper](https://img.shields.io/badge/arXiv-2504.13180-brightgreen.svg?style=flat-square)](https://arxiv.org/abs/2504.13180)
+[![Hugging Face Collection](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Collection-blue)](https://huggingface.co/collections/facebook/perception-lm-67f9783f171948c383ee7498)
+[![Colab](https://img.shields.io/badge/Google%20Colab-Tutorials-red)](notebook_demos)
 [![ModelLicense](https://img.shields.io/badge/Model_License-FAIR_Research_License-lightgrey)](../../LICENSE.PLM)
 
 ---
+
+This is the official implementation of **Perception Language Model** from our paper:  
+**[PerceptionLM: Open-Access Data and Models for Detailed Visual Understanding](https://ai.meta.com/research/publications/perceptionlm-open-access-data-and-models-for-detailed-visual-understanding)**  
+Jang Hyun Cho*, Andrea Madotto*, Effrosyni Mavroudi*, Triantafyllos Afouras*, Tushar Nagarajan*, Muhammad Maaz*, Yale Song*, Tengyu Ma*, Shuming Hu*, Suyog Jain, Miguel Martin, Huiyu Wang, Hanoona Rasheed, Peize Sun, Po-Yao Huang, Daniel Bolya, Nikhila Ravi, Shashank Jain, Tammy Stark, Shane Moon, Babak Damavandi, Vivian Lee, Andrew Westbury, Salman Khan, Philipp Krähenbühl, Piotr Dollár, Lorenzo Torresani*, Kristen Grauman*, Christoph Feichtenhofer*  
+\* Joint First Author / Project Lead
+
+_[HuggingFace](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face%20Collection-Models,%20Data,%20and%20Benchmarks-blue)_ | _[Blog](ai.meta.com/blog/meta-fair-updates-perception-localization-reasoning)_ | _[GitHub](https://github.com/facebookresearch/perception_models)_ | _[arXiv](https://arxiv.org/abs/2504.13180)_ | _[BibTeX](#citation)_
+
+<img src="docs/assets/teaser.png" style="width: 90%; margin: 0 auto; display: block;" />
+<br />
 
 # Model Details
 
@@ -14,7 +25,7 @@ Detailed Visual Understanding](https://ai.meta.com/research/publications/percept
 **Model Developer**: Meta
 
 **Model Overview**: PLM consists of a vision encoder with a small scale (<8B parameters) LLM decoder. We start by an analysis of standard training pipelines with available data, without any proprietary model distillation. We investigate large-scale
-synthetic data and establish key scaling laws to identify critical data gaps that limit video understanding performance, especially for spatio-temporal reasoning and fine-grained understanding tasks. To fill these gaps, we create 2.8M high-quality human-labeled. This release is nearly an order of magnitude larger than the largest existing video datasets.
+synthetic data and establish key scaling laws to identify critical data gaps that limit video understanding performance, especially for spatio-temporal reasoning and fine-grained understanding tasks. To fill these gaps, we release 2.8M human-labeled instances of fine-grained video question-answer pairs and spatio-temporally grounded video captions. This release is nearly an order of magnitude larger than the largest existing video datasets. Additionally, we introduce PLM–VideoBench, a suite for evaluating challenging video understanding tasks focusing on the ability to reason about "what", "where", "when", and "how" of a video.
 
 ![Description of the image](docs/plm_main_fig.png)
 
