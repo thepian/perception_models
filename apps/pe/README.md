@@ -10,7 +10,7 @@ This is the official implementation of **Perception Encoder** from our paper:
 **[Perception Encoder: The best visual embeddings are hidden inside the network](https://ai.meta.com/research/publications/perception-encoder-the-best-visual-embeddings-are-not-at-the-output-of-the-network)**  
 Daniel Bolya*, Po-Yao Huang*, Peize Sun*, Jang Hyun Cho*, Andrea Madotto*, Chen Wei, Tengyu Ma, Jiale Zhi, Jathushan Rajasegaran, Hanoona Rasheed, Junke Wang, Marco Monteiro, Hu Xu, Shiyu Dong, Nikhila Ravi, Daniel Li, Piotr Dollár, Christoph Feichtenhofer  
 \* Joint First Author  
-_[HuggingFace](https://huggingface.co/collections/facebook/perception-encoder-67f977c9a65ca5895a7f6ba1)_ | _[Blog](ai.meta.com/blog/meta-fair-updates-perception-localization-reasoning)_ | _[GitHub](https://github.com/facebookresearch/perception_models)_ | _[arXiv](https://arxiv.org/abs/2504.13181)_ | _[BibTeX](#citation)_
+_[HuggingFace](https://huggingface.co/collections/facebook/perception-encoder-67f977c9a65ca5895a7f6ba1)_ | _[Blog](https://ai.meta.com/blog/meta-fair-updates-perception-localization-reasoning)_ | _[GitHub](https://github.com/facebookresearch/perception_models)_ | _[arXiv](https://arxiv.org/abs/2504.13181)_ | _[BibTeX](#citation)_
 
 <img src="docs/assets/teaser.png" style="width: 90%; margin: 0 auto; display: block;" />
 <br />
