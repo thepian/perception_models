@@ -51,7 +51,7 @@ PE has 3 types of checkpoints, each excelling in a different area of computer vi
   Visualization of PCA of non-maked visual tokens, mapped to RGB values.
 </div>
 
-### Getting Started
+### Getting Started with PE
 You can get started with the following example for image and text feature extraction or use our [Colab Demo](https://colab.research.google.com/github/facebookresearch/perception_models/blob/main/apps/pe/docs/pe_demo.ipynb)
 
 ```python
@@ -108,7 +108,7 @@ Perception Language Model (PLM) is a family of open and fully reproducible model
 | PLM3B  | 96.1 | 37.4 | 89.4 | 74.7 | 83.4 | 79.3 | 84.8 | 55.3 | 54.9 | 58.9 | 66.2 | 66.9 | 23.4 | 30.9 | 60.4 | 69.3 | 47.2 | 57.7 | 55.5 | 76.5 |
 | PLM8B  | 99.7 | 35.9 | 90.7 | 77.1 | 84.1 | 82.7 | 84.9 | 59.3 | 58.3 | 63.5 | 67.3 | 68.8 | 28.3 | 33.2 | 61.4 | 72.7 | 46.4 | 58.6 | 57.7 | 77.3 |
 
-### Getting Started
+### Getting Started with PLM
 
 For more task-specific usecases, check out our notebook tutorials to get started:
 - [Image and video captioning](./notebook_demos/image_and_video_captioning.ipynb) 
