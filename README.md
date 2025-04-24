@@ -87,7 +87,7 @@ print("Label probs:", text_probs)  # prints: [[0.0, 0.0, 1.0]]
 ```
 
 > [!TIP]
-> See [`apps/pe/README.md`](apps/pw/README.md) for details and how to get started!
+> See [`apps/pe/README.md`](apps/pe/README.md) for details and how to get started!
 
 
 ## Perception Language Model (PLM)
