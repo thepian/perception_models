@@ -18,8 +18,8 @@ python -m torch.distributed.launch --nproc_per_node=8 \
 --backbone_lrd 0.9 --backbone_layers 50 \
 --num_workers 4 \
 --coco_path /checkpoint/vision_encoder/public_data/coco \
---lsj --lsj_img_size 1728 \
+--lsj --lsj_img_size 1824 \
 --backbone_use_act_checkpoint --backbone_act_checkpoint_ratio 1.0 \
 --eval \
---resume /checkpoint/vision_encoder/d2_output/coco_sota/finetune_spatial_Gwin384_cocoep12_1728pix_8node/checkpoint.pth \
+--resume /checkpoint/vision_encoder/d2_output/coco_sota/finetune_further_spatial_Gwin384_cocoep3_1824pix_8node/checkpoint.pth \
 "$@"

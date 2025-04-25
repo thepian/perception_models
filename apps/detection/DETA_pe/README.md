@@ -22,8 +22,7 @@ Also install [Deformable Attention](models/ops/make.sh) ops.
 <td align="center">PE spatial G</td>
 <td align="center"> 65.2 </td>
 <td align="center"> 66.0 </td>
-<!-- <td align="center"><a href="https://huggingface.co/facebook/PE-Detection/resolve/main/deta_coco.pth">model</a></td> -->
-<td align="center"> Coming Soon </a></td>
+<td align="center"><a href="https://huggingface.co/facebook/PE-Detection/resolve/main/deta_coco_1824pix.pth">model</a></td>
 </tr>
 </tbody></table>
 
@@ -36,18 +35,18 @@ sbatch scripts/pretrain_spatial_Gwin384_o365ep12_1024pix_16node.sh
 
 sbatch scripts/pretrain_continue_spatial_Gwin384_o365ep6_1536pix_16node.sh
 
-sbatch scripts/finetune_spatial_Gwin384_o365ep12_1728pix_ep12_8node.sh
+sbatch scripts/finetune_spatial_Gwin384_cocoep12_1728pix_8node.sh
 
-...
+sbatch scripts/finetune_further_spatial_Gwin384_cocoep3_1824pix_8node.sh
 
 ```
 
 ## Evaluation
 ```
-bash scripts/eval.sh --resume deta_coco_1824pix.pth
+bash scripts/eval_1824pix.sh --resume deta_coco_1824pix.pth
 ```
 
 ## Evaluation with TTA (Test-Time Augmentation)
 ```
-sbatch scripts/eval_tta_slurm.sh --resume deta_coco_1824pix.pth
+sbatch scripts/eval_tta_slurm_1824pix.sh --resume deta_coco_1824pix.pth
 ```

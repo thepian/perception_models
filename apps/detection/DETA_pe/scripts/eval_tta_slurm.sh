@@ -54,7 +54,7 @@ main.py \
 --lsj --lsj_img_size 1728 \
 --backbone_use_act_checkpoint --backbone_act_checkpoint_ratio 1.0 \
 --eval \
---resume /checkpoint/vision_encoder/d2_output/coco_sota/finetune_spatial_Gwin384_o365ep12_1728pix_ep12_8node/checkpoint.pth \
+--resume /checkpoint/vision_encoder/d2_output/coco_sota/finetune_spatial_Gwin384_cocoep12_1728pix_8node/checkpoint.pth \
 --soft_nms \
 --tta \
 "$@"

@@ -23,19 +23,14 @@ from datasets.panoptic_eval import PanopticEvaluator
 from models.utils_softnms import batched_soft_nms
 from util.misc import NestedTensor
 
+
 # Make sure this is consistent with datasets/coco.py 
 # TODO: make it configurable
-SCALE_RANGES = [
-    [0, 10000],
-    [32, 10000],
-    [32, 10000],
-]
+SCALE_RANGES_DICT = {
+    1728: [[0, 10000], [32, 10000], [32, 10000],],
+    1824: [[0, 10000], [0, 10000], [64, 10000], [64, 10000],],
+}
 
-IMAGE_SIZE = [
-    1728,
-    1728,
-    1728,
-]
 
 def filter_boxes(boxes, min_scale, max_scale):
     """
@@ -62,6 +57,10 @@ def evaluate_tta(
     ema=None,
     save_result=False,
     save_result_dir="",
+    soft_nms_method="quad",
+    nms_thresh=0.7,
+    quad_scale=0.5,
+    lsj_img_size=1824,
 ):
     model = model_no_ema if ema is None else ema
     model.eval()
@@ -77,6 +76,9 @@ def evaluate_tta(
     coco_evaluator = CocoEvaluator(base_ds, iou_types)
     # coco_evaluator.coco_eval[iou_types[0]].params.iouThrs = [0, 0.1, 0.5, 0.75]
 
+    SCALE_RANGES = SCALE_RANGES_DICT[lsj_img_size]
+    IMAGE_SIZE = [lsj_img_size for _ in range(len(SCALE_RANGES))]
+    
     prediction_list = []
     for samples, targets in metric_logger.log_every(data_loader, 10, header):
         samples = samples.to(device)
@@ -116,7 +118,12 @@ def evaluate_tta(
                     ######## no flip #######
                     outputs = model(first_samples)
                     noaug_results = postprocessors["bbox"](
-                        outputs, orig_target_sizes, soft_nms=soft_nms
+                        outputs, 
+                        orig_target_sizes, 
+                        soft_nms=soft_nms,
+                        method=soft_nms_method,
+                        nms_thresh=nms_thresh,
+                        quad_scale=quad_scale,
                     )
                     keep = filter_boxes(
                         noaug_results[0]["boxes"], *SCALE_RANGES[scale_ind // 2]
@@ -142,7 +149,12 @@ def evaluate_tta(
                     new_outputs["pred_logits"] = flipped_pred_logits
                     new_outputs["pred_boxes"] = reflipped_pred_boxes
                     new_results = postprocessors["bbox"](
-                        new_outputs, orig_target_sizes, soft_nms=soft_nms
+                        new_outputs, 
+                        orig_target_sizes, 
+                        soft_nms=soft_nms,
+                        method=soft_nms_method,
+                        nms_thresh=nms_thresh,
+                        quad_scale=quad_scale,
                     )
                     keep = filter_boxes(
                         new_results[0]["boxes"], *SCALE_RANGES[scale_ind // 2]
@@ -160,8 +172,9 @@ def evaluate_tta(
                 all_boxes,
                 all_scores,
                 all_classes,
-                0.7,
-                method="linear",
+                method=soft_nms_method,
+                threshold=nms_thresh,
+                quad_scale=quad_scale,
             )
             merged_scores = updated_scores
             merged_classes = all_classes[keep_inds]

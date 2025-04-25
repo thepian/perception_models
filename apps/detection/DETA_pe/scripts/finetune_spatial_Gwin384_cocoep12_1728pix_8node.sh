@@ -8,8 +8,8 @@
 #SBATCH --gres=gpu:8
 #SBATCH --cpus-per-task=32
 #SBATCH --mem=0
-#SBATCH --output=/checkpoint/vision_encoder/d2_output/slurm_logs/coco_sota/finetune_spatial_Gwin384_o365ep12_1728pix_ep12_8node/%j.out
-#SBATCH --error=/checkpoint/vision_encoder/d2_output/slurm_logs/coco_sota/finetune_spatial_Gwin384_o365ep12_1728pix_ep12_8node/%j.err
+#SBATCH --output=/checkpoint/vision_encoder/d2_output/slurm_logs/coco_sota/finetune_spatial_Gwin384_cocoep12_1728pix_8node/%j.out
+#SBATCH --error=/checkpoint/vision_encoder/d2_output/slurm_logs/coco_sota/finetune_spatial_Gwin384_cocoep12_1728pix_8node/%j.err
 #SBATCH --time=96:00:00
 
 module load cuda/12.1
@@ -24,7 +24,7 @@ export LOGLEVEL=INFO
 echo head_node_ip $head_node_ip
 echo endpoint "${head_node_ip}:29500"
 
-EXP_DIR="/checkpoint/vision_encoder/d2_output/coco_sota/finetune_spatial_Gwin384_o365ep12_1728pix_ep12_8node"
+EXP_DIR="/checkpoint/vision_encoder/d2_output/coco_sota/finetune_spatial_Gwin384_cocoep12_1728pix_8node"
 
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 

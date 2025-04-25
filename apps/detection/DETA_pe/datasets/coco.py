@@ -39,6 +39,7 @@ class CocoDetection(TvCocoDetection):
         test_hflip_aug=False,
         tta=False,
         is_train=False,
+        lsj_img_size=1824,
     ):
         super(CocoDetection, self).__init__(
             img_folder,
@@ -51,8 +52,11 @@ class CocoDetection(TvCocoDetection):
         self.prepare = ConvertCocoPolysToMask(return_masks)
         self.test_hflip_aug = test_hflip_aug
         self.tta = tta
-        self.tta_image_size = [1152, 1536,]  #TODO: make it configurable
-
+        if lsj_img_size == 1728: # for back-compatibility
+            self.tta_image_size = [1536, 1152,]
+        else:
+            self.tta_image_size = [1728, 1536, 1344,]
+        
         self.is_train = is_train
 
     def __getitem__(self, idx):
@@ -336,5 +340,6 @@ def build(image_set, args):
         test_hflip_aug=args.test_hflip_aug,
         tta=args.tta,
         is_train=("train" in image_set),
+        lsj_img_size=args.lsj_img_size,
     )
     return dataset

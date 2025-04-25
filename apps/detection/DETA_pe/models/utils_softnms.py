@@ -15,10 +15,11 @@ def batched_soft_nms(
     boxes,
     scores,
     idxs,
-    linear_threshold=0.7,
+    threshold=0.7,
     method="linear",
     gaussian_sigma=0.5,
     prune_threshold=0.001,
+    quad_scale=1.0,
 ):
     """
     Performs soft non-maximum suppression in a batched fashion.
@@ -63,11 +64,19 @@ def batched_soft_nms(
     offsets = idxs.to(boxes) * (max_coordinate + 1)
     boxes_for_nms = boxes + offsets[:, None]
     return soft_nms(
-        boxes_for_nms, scores, method, gaussian_sigma, linear_threshold, prune_threshold
+        boxes_for_nms,
+        scores,
+        method,
+        gaussian_sigma,
+        threshold,
+        prune_threshold,
+        quad_scale,
     )
 
 
-def soft_nms(boxes, scores, method, gaussian_sigma, linear_threshold, prune_threshold):
+def soft_nms(
+    boxes, scores, method, gaussian_sigma, linear_threshold, prune_threshold, quad_scale
+):
     """
     Performs soft non-maximum suppression algorithm on axis aligned boxes
     Args:
@@ -103,6 +112,7 @@ def soft_nms(boxes, scores, method, gaussian_sigma, linear_threshold, prune_thre
         gaussian_sigma,
         linear_threshold,
         prune_threshold,
+        quad_scale,
     )
 
 
@@ -115,6 +125,7 @@ def _soft_nms(
     gaussian_sigma,
     linear_threshold,
     prune_threshold,
+    quad_scale,
 ):
     """
     Soft non-max suppression algorithm.
@@ -162,7 +173,11 @@ def _soft_nms(
         top_box = boxes[top_idx]
         ious = pairwise_iou_func(box_class(top_box.unsqueeze(0)), box_class(boxes))[0]
 
-        if method == "linear":
+        if method == "quad":
+            decay = torch.ones_like(ious)
+            decay_mask = ious > linear_threshold
+            decay[decay_mask] = (1 - ious[decay_mask]) ** quad_scale
+        elif method == "linear":
             decay = torch.ones_like(ious)
             decay_mask = ious > linear_threshold
             decay[decay_mask] = 1 - ious[decay_mask]

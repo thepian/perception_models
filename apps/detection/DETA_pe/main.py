@@ -277,6 +277,9 @@ def get_args_parser():
     parser.add_argument("--test_hflip_aug", action="store_true")
     parser.add_argument("--tta", action="store_true")
     parser.add_argument("--soft_nms", action="store_true")
+    parser.add_argument("--soft_nms_method", default="quad", type=str)
+    parser.add_argument("--nms_thresh", default=0.7, type=float)
+    parser.add_argument("--quad_scale", default=0.5, type=float)
     parser.add_argument(
         "--output_dir", default="", help="path where to save, empty for no saving"
     )
@@ -611,6 +614,12 @@ def main(args):
                 args.tta,
                 args.soft_nms,
                 ema if args.ema else None,
+                args.save_result,
+                args.save_result_dir,
+                soft_nms_method=args.soft_nms_method,
+                nms_thresh=args.nms_thresh,
+                quad_scale=args.quad_scale,
+                lsj_img_size=args.lsj_img_size,
             )
         torch.cuda.empty_cache()
 
@@ -629,6 +638,10 @@ def main(args):
             ema if args.ema else None,
             args.save_result,
             args.save_result_dir,
+            soft_nms_method=args.soft_nms_method,
+            nms_thresh=args.nms_thresh,
+            quad_scale=args.quad_scale,
+            lsj_img_size=args.lsj_img_size,
         )
 
         if args.output_dir:
@@ -694,6 +707,12 @@ def main(args):
                 args.tta,
                 args.soft_nms,
                 ema if args.ema else None,
+                args.save_result,
+                args.save_result_dir,
+                soft_nms_method=args.soft_nms_method,
+                nms_thresh=args.nms_thresh,
+                quad_scale=args.quad_scale,
+                lsj_img_size=args.lsj_img_size,
             )
             log_stats = {
                 **{f"train_{k}": v for k, v in train_stats.items()},

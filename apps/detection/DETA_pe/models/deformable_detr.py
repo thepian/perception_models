@@ -598,7 +598,16 @@ class NMSPostProcess(nn.Module):
     """This module converts the model's output into the format expected by the coco api"""
 
     @torch.no_grad()
-    def forward(self, outputs, target_sizes, num_topk=100, soft_nms=False):
+    def forward(
+        self,
+        outputs,
+        target_sizes,
+        num_topk=100,
+        soft_nms=False,
+        nms_thresh=0.7,
+        method="quad",
+        quad_scale=1.0,
+    ):
         """Perform the computation
         Parameters:
             outputs: raw outputs of the model
@@ -646,8 +655,9 @@ class NMSPostProcess(nn.Module):
                     box,
                     score,
                     lbls,
-                    0.7,
-                    method="linear",
+                    nms_thresh,
+                    method=method,
+                    quad_scale=quad_scale,
                 )[:num_topk]
 
                 results.append(
@@ -663,7 +673,7 @@ class NMSPostProcess(nn.Module):
                     box = box[pre_topk]
                     score = score[pre_topk]
                     lbls = lbls[pre_topk]
-                keep_inds = batched_nms(box, score, lbls, 0.7)[:num_topk]
+                keep_inds = batched_nms(box, score, lbls, nms_thresh)[:num_topk]
                 results.append(
                     {
                         "scores": score[keep_inds],

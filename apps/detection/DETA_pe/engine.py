@@ -122,6 +122,10 @@ def evaluate(
     ema=None,
     save_result=False,
     save_result_dir="",
+    soft_nms_method="quad",
+    nms_thresh=0.7,
+    quad_scale=0.5,
+    lsj_img_size=1824,
 ):
     model = model_no_ema if ema is None else ema
     model.eval()
@@ -208,11 +212,21 @@ def evaluate(
             new_outputs["pred_logits"] = new_pred_logits
             new_outputs["pred_boxes"] = new_pred_boxes
             results = postprocessors["bbox"](
-                new_outputs, orig_target_sizes, soft_nms=soft_nms
+                new_outputs, 
+                orig_target_sizes, 
+                soft_nms=soft_nms,
+                method=soft_nms_method,
+                nms_thresh=nms_thresh,
+                quad_scale=quad_scale,
             )
         else:
             results = postprocessors["bbox"](
-                outputs, orig_target_sizes, soft_nms=soft_nms
+                outputs, 
+                orig_target_sizes, 
+                soft_nms=soft_nms,
+                method=soft_nms_method,
+                nms_thresh=nms_thresh,
+                quad_scale=quad_scale,
             )
         if "segm" in postprocessors.keys():
             target_sizes = torch.stack([t["size"] for t in targets], dim=0)
