@@ -104,22 +104,24 @@ class Conversation:
     def get_generation_prompt(
         self, prompt: str, num_images: int = 1, num_patches: int = 144
     ):
-        prompt = (
-            prompt.replace("<image>\n", "")
-            .replace("\n<image>", "")
-            .replace("<image>", "")
-            .replace("<video>\n", "")
-            .replace("\n<video>", "")
-            .replace("<video>", "")
-        )
+        if prompt.count("<image>") == num_images:
+            prompt = prompt.replace("<image>", self.image_token * num_patches)
+        else:
+            prompt = (
+                prompt.replace("<image>\n", "")
+                .replace("\n<image>", "")
+                .replace("<image>", "")
+                .replace("<video>\n", "")
+                .replace("\n<video>", "")
+                .replace("<video>", "")
+            )
+            prompt = self.place_image_token(
+                prompt,
+                self.image_token,
+                num_images * num_patches,
+            )
 
         sys_text = self.bos_token + self.pre_system + self.system + self.sep_system
-        prompt = self.place_image_token(
-            prompt,
-            self.image_token,
-            num_images * num_patches,
-        )
-
         return (
             sys_text + self.pre_question + prompt + self.sep_question + self.pre_answer
         )
