@@ -50,3 +50,4 @@ bash scripts/eval_1824pix.sh --resume deta_coco_1824pix.pth
 ```
 sbatch scripts/eval_tta_slurm_1824pix.sh --resume deta_coco_1824pix.pth
 ```
+Note: If you get 65.9 AP, it is probably caused by different package versions, trying different hyperparameters like `--quad_scale 0.4` or `--nms_thresh 0.75` will give 66.0 AP. 
