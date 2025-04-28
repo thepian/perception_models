@@ -3,13 +3,14 @@
 
 name: "plm_3b_stage2"
 dump_dir: ./plm_3b_stage2
-steps: 35500
+steps: 35000
 seed: 777
 optim:
     lr: 4e-5
     warmup: 120
     lr_min_ratio: 0.01
     clip: 1.0
+    weight_decay: 0.01
 
 distributed:
     fsdp_type: full_shard

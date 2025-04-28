@@ -10,6 +10,7 @@ optim:
     warmup: 20
     lr_min_ratio: 0.01
     clip: 1.0
+    weight_decay: 0.01
 
 distributed:
     fsdp_type: full_shard
@@ -36,7 +37,7 @@ model:
     max_seqlen: 1280
     freeze_language_model: true
     freeze_vision_model: true
-    pooling_ratio: 2
+    pooling_ratio: 1
     vision_model:
         image_size: 448
         patch_size: 14
@@ -54,7 +55,7 @@ model:
 data:
     datamix: <We use our synthetic SA-1B dataset for stage 1, https://huggingface.co/datasets/facebook/PLM-Image-Auto/tree/main/sa1b>
     num_workers: 8
-    batch_size: 8
+    batch_size: 16
     image_res: 448
     max_num_tiles: 1
     max_video_frames: 8
