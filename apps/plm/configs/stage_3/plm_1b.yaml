@@ -1,14 +1,16 @@
-# Template config to finetune PLM on custom dataset.
+# We use a global batch size of 1024 in stage # 3 for PLM-1B model. Please adjust batch_size as per your training setup.
+# For example, one possible configuration is batch_size=4,nodes=32,gpus_per_node=8 = 4*32*8 = 1024 global batch size.
 
-name: "plm_1b_warmup"
-dump_dir: ./plm_1b_warmup
-steps: 200
+name: "plm_1b_stage3"
+dump_dir: ./plm_1b_stage3
+steps: 21000
 seed: 777
 optim:
-    lr: 5e-5
-    warmup: 20
+    lr: 4e-5
+    warmup: 120
     lr_min_ratio: 0.01
     clip: 1.0
+    weight_decay: 0.01
 
 distributed:
     fsdp_type: full_shard
@@ -32,9 +34,9 @@ model:
     weight_tying: true
     rope_scale_factor: 32
     high_freq_factor: 4
-    max_seqlen: 3072
-    freeze_language_model: true
-    freeze_vision_model: true
+    max_seqlen: 11520
+    freeze_language_model: false
+    freeze_vision_model: false
     pooling_ratio: 2
     vision_model:
         image_size: 448
@@ -45,19 +47,21 @@ model:
         use_cls_token: true
         use_abs_posemb: true
         mlp_ratio: 4.0
+        ls_init_value: 0.1
+        drop_path: 0.1
         use_ln_post: false
         pool_type: "none"
     mlp_init:
         use_gaussian: true
 
 data:
-    datamix: dummy_image:1,dummy_multi_image:1
+    datamix: <Please consider using data split listed in Table A2 of our paper https://arxiv.org/pdf/2504.13180. The weight of the dataset would be same as the number of samples.>
     num_workers: 4
-    batch_size: 8
+    batch_size: 2
     image_res: 448
-    max_num_tiles: 1
-    max_video_frames: 8
-    vision_input_type: vanilla
+    max_num_tiles: 36
+    max_video_frames: 32
+    vision_input_type: thumb+tile
     tokenizer_path: facebook/Perception-LM-1B/tokenizer.model
     tokenizer_name: plmchat
     conversation_format: plm_sft
@@ -69,8 +73,7 @@ checkpoint:
     dump:
         every: 500
         keep: 1
-    init_ckpt_path: meta-llama/Llama-3.2-1B-Instruct/original
-    vision_model_path: facebook/PE-Core-L14-336-interpolated-to-448/model.pt
+    init_ckpt_path: <Point it to the consolidated checkpoints from PLM 1B Stage 2>
     is_consolidated_model: True
 
 logging:

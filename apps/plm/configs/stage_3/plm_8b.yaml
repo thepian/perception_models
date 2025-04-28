@@ -1,18 +1,20 @@
-# Template config to finetune PLM on custom dataset.
+# We use a global batch size of 1024 in stage # 3 for PLM-8B model. Please adjust batch_size as per your training setup.
+# For example, one possible configuration is batch_size=2,nodes=64,gpus_per_node=8 = 2*64*8 = 1024 global batch size.
 
-name: "plm_8b_sft"
-dump_dir: ./plm_8b_sft
-steps: 200
+name: "plm_8b_stage3"
+dump_dir: ./plm_8b_stage3
+steps: 21000
 seed: 777
 optim:
     lr: 1e-5
     warmup: 120
     lr_min_ratio: 0.01
     clip: 1.0
+    weight_decay: 0.05
 
 distributed:
     fsdp_type: full_shard
-    compile: true
+    compile: false
     model_dtype: bf16
     matmul_allow_tf32: false
     selective_activation_checkpointing: false
@@ -30,7 +32,7 @@ model:
     norm_eps: 1e-05
     rope_theta: 500000.0
     weight_tying: false
-    max_seqlen: 3072
+    max_seqlen: 11520
     freeze_language_model: false
     freeze_vision_model: false
     pooling_ratio: 2
@@ -51,7 +53,7 @@ model:
         use_gaussian: true
 
 data:
-    datamix: dummy_image:1,dummy_multi_image:1,dummy_image_region:1,dummy_video:1,dummy_stc_RDCap:1,dummy_stc_RCap:1,dummy_stc_RTLoc:1
+    datamix: <Please consider using data split listed in Table A2 of our paper https://arxiv.org/pdf/2504.13180. The weight of the dataset would be same as the number of samples.>
     num_workers: 4
     batch_size: 2
     image_res: 448
@@ -69,7 +71,7 @@ checkpoint:
     dump:
         every: 500
         keep: 1
-    init_ckpt_path: facebook/Perception-LM-8B
+    init_ckpt_path: <Point it to the consolidated checkpoints from PLM 8B Stage 2>
     is_consolidated_model: True
 
 logging:

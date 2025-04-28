@@ -1,14 +1,16 @@
-# Template config to finetune PLM on custom dataset.
+# We use a global batch size of 2048 in stage # 3 for PLM-1B model. Please adjust batch_size as per your training setup.
+# For example, one possible configuration is batch_size=8,nodes=32,gpus_per_node=8 = 8*32*8 = 2048 global batch size.
 
-name: "plm_1b_sft"
-dump_dir: ./plm_1b_sft
-steps: 200
+name: "plm_1b_stage2"
+dump_dir: ./plm_1b_stage2
+steps: 35000
 seed: 777
 optim:
     lr: 4e-5
     warmup: 120
     lr_min_ratio: 0.01
     clip: 1.0
+    weight_decay: 0.01
 
 distributed:
     fsdp_type: full_shard
@@ -32,7 +34,7 @@ model:
     weight_tying: true
     rope_scale_factor: 32
     high_freq_factor: 4
-    max_seqlen: 11520
+    max_seqlen: 6144
     freeze_language_model: false
     freeze_vision_model: false
     pooling_ratio: 2
@@ -53,12 +55,12 @@ model:
         use_gaussian: true
 
 data:
-    datamix: dummy_image:1,dummy_multi_image:1,dummy_image_region:1,dummy_video:1,dummy_text:1,dummy_stc_RDCap:1,dummy_stc_RCap:1,dummy_stc_RTLoc:1
+    datamix: <Please consider using data split listed in Table A1 of our paper https://arxiv.org/pdf/2504.13180. The weight of the dataset would be same as the number of samples.>
     num_workers: 8
-    batch_size: 2
+    batch_size: 4
     image_res: 448
-    max_num_tiles: 36
-    max_video_frames: 32
+    max_num_tiles: 16
+    max_video_frames: 16
     vision_input_type: thumb+tile
     tokenizer_path: facebook/Perception-LM-1B/tokenizer.model
     tokenizer_name: plmchat
@@ -71,7 +73,7 @@ checkpoint:
     dump:
         every: 500
         keep: 1
-    init_ckpt_path: facebook/Perception-LM-1B
+    init_ckpt_path: <Point it to the consolidated checkpoints from PLM 1B Stage 1>
     is_consolidated_model: True
 
 logging:

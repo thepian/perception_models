@@ -69,7 +69,7 @@ Please refer to [`apps/plm/configs/datasets.yaml`](apps/plm/configs/datasets.yam
 ---
 
 ## Training / Finetuning PLM :train:
-Training PLM involves creating a `.yaml` configuration file, defining all model and training related configurable parameters. Please refer to the provided [`sft`](../configs/sft/) for details.
+Training PLM involves creating a `.yaml` configuration file, defining all model and training related configurable parameters. Please refer to the provided [`plm_configs`](../configs) for details.
 
 > [!TIP]
 > To run the following code, download the [`dummy-datasets`](https://dl.fbaipublicfiles.com/plm/dummy_datasets.tar.gz) and extract them to `apps/plm/dummy_datasets`.
@@ -77,7 +77,7 @@ Training PLM involves creating a `.yaml` configuration file, defining all model 
 Given a `.yaml` configuration file, please run the following command to launch the training on a single node with 8 GPUs.
 
 ```shell
-torchrun --nproc-per-node 8 -m apps.plm.train config=apps/plm/configs/finetune/plm_3b.yaml
+torchrun --nproc-per-node 8 -m apps.plm.train config=apps/plm/configs/stage_3/plm_3b.yaml
 ```
 
 ### Consolidate Checkpoints
@@ -105,7 +105,7 @@ For evaluation, please refer to [`evaluation.md`](evaluation.md).
 We also provide a script to launch a distributed multinode training on slurm. Please use the provided utility named `stool.py`.
 
 ```shell
-python -m core.stool script=apps.plm.train config=apps/plm/configs/finetune/plm_8b.yaml qos=<QoS> nodes=<num_of_nodes>
+python -m core.stool script=apps.plm.train config=apps/plm/configs/stage_3/plm_8b.yaml qos=<QoS> nodes=<num_of_nodes>
 ```
 
 ---
