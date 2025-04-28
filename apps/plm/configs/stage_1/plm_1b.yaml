@@ -1,12 +1,13 @@
-# Template config to finetune PLM on custom dataset.
+# We use a global batch size of 512 in stage # 1 for PLM-1B model. Please adjust batch_size as per your training setup.
+# For example, one possible configuration is batch_size=16,nodes=4,gpus_per_node=8 = 16*4*8 = 512 global batch size.
 
-name: "plm_1b_sft"
-dump_dir: ./plm_1b_sft
-steps: 200
+name: "plm_1b_stage1"
+dump_dir: ./plm_1b_stage1
+steps: 8000
 seed: 777
 optim:
-    lr: 4e-5
-    warmup: 120
+    lr: 1e-4
+    warmup: 20
     lr_min_ratio: 0.01
     clip: 1.0
 
@@ -32,9 +33,9 @@ model:
     weight_tying: true
     rope_scale_factor: 32
     high_freq_factor: 4
-    max_seqlen: 11520
-    freeze_language_model: false
-    freeze_vision_model: false
+    max_seqlen: 1280
+    freeze_language_model: true
+    freeze_vision_model: true
     pooling_ratio: 2
     vision_model:
         image_size: 448
@@ -45,24 +46,22 @@ model:
         use_cls_token: true
         use_abs_posemb: true
         mlp_ratio: 4.0
-        ls_init_value: 0.1
-        drop_path: 0.1
         use_ln_post: false
         pool_type: "none"
     mlp_init:
         use_gaussian: true
 
 data:
-    datamix: dummy_image:1,dummy_multi_image:1,dummy_image_region:1,dummy_video:1,dummy_text:1,dummy_stc_RDCap:1,dummy_stc_RCap:1,dummy_stc_RTLoc:1
+    datamix: <We use our synthetic SA-1B dataset for stage 1, https://huggingface.co/datasets/facebook/PLM-Image-Auto/tree/main/sa1b>
     num_workers: 8
-    batch_size: 2
+    batch_size: 8
     image_res: 448
-    max_num_tiles: 36
-    max_video_frames: 32
-    vision_input_type: thumb+tile
+    max_num_tiles: 1
+    max_video_frames: 8
+    vision_input_type: vanilla
     tokenizer_path: facebook/Perception-LM-1B/tokenizer.model
     tokenizer_name: plmchat
-    conversation_format: plm_sft
+    conversation_format: warmup
 
 profiling:
     run: false
@@ -71,7 +70,9 @@ checkpoint:
     dump:
         every: 500
         keep: 1
-    init_ckpt_path: facebook/Perception-LM-1B
+    init_ckpt_path: meta-llama/Llama-3.2-1B-Instruct/original
+    # Please use the script at apps/plm/interpolate_PE_pos_embed.py to interpolate PE-Core-L14-336 (https://huggingface.co/facebook/PE-Core-L14-336) checkpoints to 448 resolution.
+    vision_model_path: facebook/PE-Core-L14-336-interpolated-to-448/model.pt
     is_consolidated_model: True
 
 logging:

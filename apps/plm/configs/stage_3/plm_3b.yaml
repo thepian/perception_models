@@ -1,8 +1,9 @@
-# Template config to finetune PLM on custom dataset.
+# We use a global batch size of 1024 in stage # 3 for PLM-3B model. Please adjust batch_size as per your training setup.
+# For example, one possible configuration is batch_size=4,nodes=32,gpus_per_node=8 = 4*32*8 = 1024 global batch size.
 
-name: "plm_3b_sft"
-dump_dir: ./plm_3b_sft
-steps: 200
+name: "plm_3b_stage3"
+dump_dir: ./plm_3b_stage3
+steps: 21500
 seed: 777
 optim:
     lr: 4e-5
@@ -32,7 +33,7 @@ model:
     weight_tying: true
     rope_scale_factor: 32
     high_freq_factor: 4
-    max_seqlen: 3072
+    max_seqlen: 11520
     freeze_language_model: false
     freeze_vision_model: false
     pooling_ratio: 2
@@ -53,7 +54,7 @@ model:
         use_gaussian: true
 
 data:
-    datamix: dummy_image:1,dummy_multi_image:1,dummy_image_region:1,dummy_video:1,dummy_text:1,dummy_stc_RDCap:1,dummy_stc_RCap:1,dummy_stc_RTLoc:1
+    datamix: <Please consider using data split listed in Table A2 of our paper https://arxiv.org/pdf/2504.13180. The weight of the dataset would be same as the number of samples.>
     num_workers: 4
     batch_size: 2
     image_res: 448
@@ -71,7 +72,7 @@ checkpoint:
     dump:
         every: 500
         keep: 1
-    init_ckpt_path: facebook/Perception-LM-3B
+    init_ckpt_path: <Point it to the consolidated checkpoints from PLM 3B Stage 2>
     is_consolidated_model: True
 
 logging:

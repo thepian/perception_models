@@ -1,12 +1,13 @@
-# Template config to finetune PLM on custom dataset.
+# We use a global batch size of 1024 in stage # 3 for PLM-8B model. Please adjust batch_size as per your training setup.
+# For example, one possible configuration is batch_size=2,nodes=64,gpus_per_node=8 = 2*64*8 = 1024 global batch size.
 
-name: "plm_8b_warmup"
-dump_dir: ./plm_8b_warmup
-steps: 200
+name: "plm_8b_stage3"
+dump_dir: ./plm_8b_stage3
+steps: 21500
 seed: 777
 optim:
-    lr: 5e-5
-    warmup: 20
+    lr: 1e-5
+    warmup: 120
     lr_min_ratio: 0.01
     clip: 1.0
 
@@ -30,9 +31,9 @@ model:
     norm_eps: 1e-05
     rope_theta: 500000.0
     weight_tying: false
-    max_seqlen: 3072
-    freeze_language_model: true
-    freeze_vision_model: true
+    max_seqlen: 11520
+    freeze_language_model: false
+    freeze_vision_model: false
     pooling_ratio: 2
     vision_model:
         image_size: 448
@@ -43,19 +44,21 @@ model:
         use_cls_token: false
         use_abs_posemb: true
         mlp_ratio: 5.833333334
+        ls_init_value: 0.1
+        drop_path: 0.1
         use_ln_post: false
         pool_type: "none"
     mlp_init:
         use_gaussian: true
 
 data:
-    datamix: dummy_image:1,dummy_multi_image:1
+    datamix: <Please consider using data split listed in Table A2 of our paper https://arxiv.org/pdf/2504.13180. The weight of the dataset would be same as the number of samples.>
     num_workers: 4
     batch_size: 2
     image_res: 448
-    max_num_tiles: 1
-    max_video_frames: 8
-    vision_input_type: vanilla
+    max_num_tiles: 36
+    max_video_frames: 32
+    vision_input_type: thumb+tile
     tokenizer_path: facebook/Perception-LM-8B/tokenizer.model
     tokenizer_name: plmchat
     conversation_format: plm_sft
@@ -67,8 +70,7 @@ checkpoint:
     dump:
         every: 500
         keep: 1
-    init_ckpt_path: meta-llama/Llama-3.1-8B-Instruct/original
-    vision_model_path: facebook/PE-Core-G14-448/model.pt
+    init_ckpt_path: <Point it to the consolidated checkpoints from PLM 8B Stage 2>
     is_consolidated_model: True
 
 logging:
