@@ -80,9 +80,9 @@ radiology_finetune:
 ```
 
 ### 3. Copy and modify the provided finetuning config
-We provide example finetuning scripts in [configs/finetune/](../configs/finetune/). 
+The stage # 3 configs can be used to further finetune PLM [configs/stage_3](../configs/stage_3). 
 ```bash
-cp apps/plm/configs/finetune/plm_8b.yaml apps/plm/configs/finetune/plm_8b_custom.yaml 
+cp apps/plm/configs/stage_3/plm_8b.yaml apps/plm/configs/finetune/plm_8b_custom.yaml 
 ```
 
 Copy the config and modify the fields below.
@@ -103,7 +103,7 @@ checkpoint:
     init_ckpt_path: facebook/Perception-LM-8B
 ```
 
-Various other parameters can be changed such as learning rate, batch_size, etc. See comments in [configs/finetune/plm_8b.yaml](../configs/finetune/plm_8b.yaml) for details.
+Various other parameters can be changed such as learning rate, batch_size, etc. See comments in [configs/stage_3/plm_8b.yaml](../configs/stage_3/plm_8b.yaml) for details.
 
 ### 4. Finetune the model
 Finetune a model on a single node. For multi-node training, refer to the main [training.md](training.md) doc.
@@ -161,7 +161,7 @@ python apps/plm/generate.py \
 # CT scan of the abdomen demonstrating a large liver metastasis (yellow arrow) in segment VII.
 ```
 
-Comparing the two, we see the finetuned model provide concise descriptions following the style of the training set. Note that we use the same prompt as training since the dataset is small and the model has likely overfit to it. For robust training, include the new data in a large data mix (e.g., our provided [SFT blend](../configs/sft/plm_8b.yaml)).
+Comparing the two, we see the finetuned model provide concise descriptions following the style of the training set. Note that we use the same prompt as training since the dataset is small and the model has likely overfit to it. For robust training, include the new data in a large data mix (e.g., our provided [SFT blend](../configs/stage_3/plm_8b.yaml)).
 
 
 ### Wrap up
