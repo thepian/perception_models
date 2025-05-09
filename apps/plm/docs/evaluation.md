@@ -10,7 +10,12 @@ We have added our model and benchmarks to [`lmms-eval`](https://github.com/Evolv
 
 ## Getting Started
 1. Install perception_models following the instruction in the [`Main README`](../../../README.md).
-2. Install `lmms-eval`: ```pip install lmms-eval```
+2. Install `lmms-eval`:
+```
+git clone https://github.com/EvolvingLMMs-Lab/lmms-eval.git
+cd lmm-evals
+pip install -e .
+```
 
 ## Run Evaluation on Standard Image and Video Tasks
 You can use the following command to run the evaluation.
