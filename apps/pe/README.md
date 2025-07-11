@@ -42,12 +42,16 @@ PE core curently comes in 3 sizes. PE core G is the main checkpoint, with L and 
 
 | Scale | Tower  | Params | Width | Depth | MLP  | Heads | CLIP Dim |  Resolution / Context Len |
 |:-----:|:------:|:------:|:-----:|:-----:|:----:|:-----:|:--------:|:-------------------------:|
+| **T/16** | Vision | 0.01B  | 192   | 12    | 768  | 3     | 512   | 384px                     |
+|          | Text   | 0.04B  | 512   | 12    | 2048 | 8     | 512   | 32 tokens                 |
+| **S/16** | Vision | 0.02B  | 394   | 12    | 1536 | 6     | 512   | 384px                     |
+|          | Text   | 0.04B  | 512   | 12    | 2048 | 8     | 512   | 32 tokens                 |
 | **B/16** | Vision | 0.09B  | 768   | 12    | 3072 | 12    | 1024  | 224px                     |
-|       | Text   | 0.31B  | 1024  | 24    | 4096 | 16    | 1024     | 32 tokens                 |
+|          | Text   | 0.31B  | 1024  | 24    | 4096 | 16    | 1024  | 32 tokens                 |
 | **L/14** | Vision | 0.32B  | 1024  | 24    | 4096 | 16    | 1024  | 336px                     |
-|       | Text   | 0.31B  | 1024  | 24    | 4096 | 16    | 1024     | 32 tokens                 |
+|          | Text   | 0.31B  | 1024  | 24    | 4096 | 16    | 1024  | 32 tokens                 |
 | **G/14** | Vision | 1.88B  | 1536  | 50    | 8960 | 16    | 1280  | 448px                     |
-|       | Text   | 0.47B  | 1280  | 24    | 5120 | 20    | 1280     | 72 tokens                 |
+|          | Text   | 0.47B  | 1280  | 24    | 5120 | 20    | 1280  | 72 tokens                 |
 
 All PE core models use an attention pooling block with 8 heads on top of the vision tower. The L and B models _additionally_ have a class token for global aggregation. See the paper for more details.
 
@@ -56,11 +60,13 @@ All PE core models use an attention pooling block with 8 heads on top of the vis
 #### Model Performance
 PE core obtains extremely strong results across the board on zero-shot image classification and retrieval _as well as_ zero-shot video classification and retrieval. We present a sample of its performance across those domains below.
 
-| Model | Checkpoint | IN-1k | IN-v2 | IN-A | ObjectNet | COCO-T2I | Kinetics-400 | VTT-T2I
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **B/16** 224px | [PE-Core-B16-224](https://huggingface.co/facebook/PE-Core-B16-224) | 78.4 | 71.7 | 62.4 |  71.9 | 50.9 | 65.6 | 47.6 |
-| **L/14** 336px | [PE-Core-L14-336](https://huggingface.co/facebook/PE-Core-L14-336) | 83.5 | 77.9 | 89.0 | 84.7 | 57.1 | 73.4 | 50.3  |
-| **G/14** 448px | [PE-Core-G14-448](https://huggingface.co/facebook/PE-Core-G14-448) | 85.4 | 80.2 | 92.6 | 88.2 | 58.1 | 76.9 | 51.2  |
+|    | Model | Checkpoint | IN-1k | IN-v2 | IN-A | ObjectNet | COCO-T2I | Kinetics-400 | VTT-T2V
+|:--:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| 🆕 | **T/16** 384px | [PE-Core-T16-384](https://huggingface.co/facebook/PE-Core-T16-384) | 62.1 | 54.7 | 21.1 | 43.9 | 33.0 | 41.5 | 28.8 |
+| 🆕 | **S/16** 384px | [PE-Core-S16-384](https://huggingface.co/facebook/PE-Core-S16-384) | 72.7 | 65.0 | 49.5 | 60.0 | 42.6 | 55.0 | 39.3 |
+|    | **B/16** 224px | [PE-Core-B16-224](https://huggingface.co/facebook/PE-Core-B16-224) | 78.4 | 71.7 | 62.4 | 71.9 | 50.9 | 65.6 | 47.6 |
+|    | **L/14** 336px | [PE-Core-L14-336](https://huggingface.co/facebook/PE-Core-L14-336) | 83.5 | 77.9 | 89.0 | 84.7 | 57.1 | 73.4 | 50.3 |
+|    | **G/14** 448px | [PE-Core-G14-448](https://huggingface.co/facebook/PE-Core-G14-448) | 85.4 | 80.2 | 92.6 | 88.2 | 58.1 | 76.9 | 51.2 |
 
 PE core performs particularly well on the _hard_ benchmarks such as ObjectNet and ImageNet-A.
 
@@ -70,20 +76,21 @@ PE lang takes the strong language performance from the intermediate layers of PE
 
 We release two PE Lang checkpoints. Here are their results benchmarked in the frozen encoder [PLM-8B](../plm/README.md) benchmark SFT using 448px _only_ (i.e., _with no tiling_) and Llama 3.1 8B as the decoder:
 
-| Encoder | Checkpoint | Doc VQA (val) | InfoQA (val) | TextVQA | MVBench | PerceptionTest (val) | EgoSchema (val) |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **L/14** 448px | [PE-Lang-L14-448](https://huggingface.co/facebook/PE-Lang-L14-448) | 81.9 | 46.4 | 73.0 | 52.3 | 54.7 | 59.8 |
-| **G/14** 448px | [PE-Lang-G14-448](https://huggingface.co/facebook/PE-Lang-G14-448) | 84.4 | 48.3 | 75.2 | 52.4 | 56.0 | 62.0 |
+|    | Encoder | Checkpoint | Doc VQA (val) | InfoQA (val) | TextVQA | MVBench | PerceptionTest (val) | EgoSchema (val) |
+|:--:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|    | **L/14** 448px | [PE-Lang-L14-448](https://huggingface.co/facebook/PE-Lang-L14-448) | 81.9 | 46.4 | 73.0 | 52.3 | 54.7 | 59.8 |
+|    | **G/14** 448px | [PE-Lang-G14-448](https://huggingface.co/facebook/PE-Lang-G14-448) | 84.4 | 48.3 | 75.2 | 52.4 | 56.0 | 62.0 |
 
 
 
-Here is a sample of the performance obtainable by using PE lang G tuned further with [PLM-8B](../plm/README.md) using 36+1 image tiles / 32 video frames and Llama 3.1 8B as the decoder:
+Here is a sample of the performance obtainable by using PE lang G tuned further with [PLM](../plm/README.md) using 36+1 image tiles / 32 video frames and Llama 3.1 as the decoder:
 
-| Model | Encoder | Doc VQA (test) | InfoQA (test) | TextVQA | MVBench | PerceptionTest (test) | EgoSchema (test) |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| PLM-8B | [PE-Lang-G14-448](https://huggingface.co/facebook/PE-Core-G14-448)* | 94.6 | 80.9 | 86.5 | 77.1 | 82.7 | 68.8 | 
+|    | Model | Encoder | Doc VQA (test) | InfoQA (test) | TextVQA | MVBench | PerceptionTest (test) | EgoSchema (test) |
+|:--:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| 🆕 | PLM-3B | [PE-Lang-L14-448-Tiling](https://huggingface.co/facebook/PE-Lang-L14-448-Tiling)* | 93.8 | 74.6 | 84.3 | 74.7 | 79.3 | 66.9 | 
+| 🆕 | PLM-8B | [PE-Lang-G14-448-Tiling](https://huggingface.co/facebook/PE-Lang-G14-448-Tiling)* | 94.6 | 80.9 | 86.5 | 77.1 | 82.7 | 68.8 | 
 
-\* This checkpoint was further aligned using tiling. We will release the tiling aligned checkpoint soon.
+\* These checkpoints were aligned with tiling. Use them if you use higher than 448 resolution with tiling in the LLM decoder.
 
 See the paper for full performance evaluations and fair comparisons to other models. 
 
@@ -100,12 +107,24 @@ PE spatial also has nuanced semantic correspondences between objects thanks to i
 
 <img src="docs/assets/spatial_correspondence.png" style="width: 80%; margin: 0 auto; padding-top: 20px; padding-bottom: 20px; display: block;" />
 
-We release one checkpoint for PE spatial so far:  
-| Encoder | Checkpoint | ADE20k <br/> Linear Probe <br/> 448px w/o TTA | LVIS <br /> Mask R-CNN 1024px <br /> Box / Mask mAP | COCO <br/> DETA 1824px <br /> Box mAP |
-|:---:|:---:|:---:|:---:|:---:|
-| **G/14** 448px | [PE-Spatial-G14-448](https://huggingface.co/facebook/PE-Spatial-G14-448) | 49.3 | 54.2 / 49.3 | 66.0
+We releease the main PE spatial G checkpoint and several smaller models distilled from it.
 
-See paper for full set of evaluations and fair comparison to other works.
+🦾 Main model:
+|    | Encoder | Checkpoint | ADE20k <br/> [Segmentation](https://github.com/open-mmlab/mmsegmentation)<br />Linear Probe mIoU | DAVIS<br /> [Tracking](https://github.com/facebookresearch/dino/blob/main/eval_video_segmentation.py) <br />Zero-Shot J&F  | LVIS <br /> [Mask R-CNN](../detection/detectron2_pe/) 1024px <br /> Box / Mask mAP | COCO <br/> [DETA](../detection/DETA_pe/) 1824px <br /> Box mAP |
+|:--:|:---:|:---:|:---:|:---:|:---:|:---:|
+|    | **G/14** 448px | [PE-Spatial-G14-448](https://huggingface.co/facebook/PE-Spatial-G14-448) | 49.3 | 61.5 | 54.2 / 49.3 | 66.0 |
+
+See the paper for more details and benchmarks for the G model.
+
+⚗️ Distilled Models:
+|    | Encoder<br />(Distilled from G) | Checkpoint | ADE20k <br/> [Segmentation](https://github.com/open-mmlab/mmsegmentation)<br />Linear Probe mIoU | DAVIS<br /> [Tracking](https://github.com/facebookresearch/dino/blob/main/eval_video_segmentation.py) <br />Zero-Shot J&F  |
+|:--:|:---:|:---:|:---:|:---:|
+| 🆕 | **T/16** 512px | [PE-Spatial-T16-512](https://huggingface.co/facebook/PE-Spatial-T16-512) | 27.6 | 55.0 |
+| 🆕 | **S/16** 512px | [PE-Spatial-S16-512](https://huggingface.co/facebook/PE-Spatial-S16-512) | 37.5 | 57.5 |
+| 🆕 | **B/16** 512px | [PE-Spatial-B16-512](https://huggingface.co/facebook/PE-Spatial-B16-512) | 44.4 | 58.9 |
+| 🆕 | **L/14** 448px | [PE-Spatial-L14-448](https://huggingface.co/facebook/PE-Spatial-L14-448) | 48.1 | 60.6 |
+
+The smaller models are distilled from the G/14 model using a mixturre of pairwise token cosine similarly and direct distillation. More details and evals for the smaller models are coming soon!
 
 ## PE Video Dataset (PVD)
 In the process of developing the video data engine we use for PE core, we have collected a high-quality video dataset that contains 1M diverse videos with high visual fidelity and large resolution, split into 10 high level categories. We also annotated 120K samples with the highest amount of motiotion with our video captioning data engine and further asked human annotators to refine the captions. You can find more information about and download PVD [here](https://ai.meta.com/datasets/pe-video/).
@@ -131,7 +150,7 @@ import core.vision_encoder.pe as pe
 import core.vision_encoder.transforms as transforms
 
 print("CLIP configs:", pe.CLIP.available_configs())
-# CLIP configs: ['PE-Core-G14-448', 'PE-Core-L14-336', 'PE-Core-B16-224']
+# CLIP configs: ['PE-Core-G14-448', 'PE-Core-L14-336', 'PE-Core-B16-224', 'PE-Core-S16-384', 'PE-Core-T16-384']
 
 model = pe.CLIP.from_config("PE-Core-L14-336", pretrained=True)  # Downloads from HF
 model = model.cuda()
@@ -169,7 +188,7 @@ import core.vision_encoder.pe as pe
 import core.vision_encoder.transforms as transforms
 
 print("PE configs:", pe.VisionTransformer.available_configs())
-# PE configs: ['PE-Core-G14-448', 'PE-Core-L14-336', 'PE-Core-B16-224', 'PE-Lang-G14-448', 'PE-Lang-L14-448', 'PE-Spatial-G14-448']
+# PE configs: ['PE-Core-G14-448', 'PE-Core-L14-336', 'PE-Core-B16-224', 'PE-Core-S16-384', 'PE-Core-T16-384', 'PE-Lang-G14-448', 'PE-Lang-L14-448', 'PE-Lang-G14-448-Tiling', 'PE-Lang-L14-448-Tiling', 'PE-Spatial-G14-448', 'PE-Spatial-L14-448', 'PE-Spatial-B16-512', 'PE-Spatial-S16-512', 'PE-Spatial-T16-512']
 
 model = pe.VisionTransformer.from_config("PE-Lang-L14-448", pretrained=True)  # Loads from HF
 model = model.cuda()
@@ -177,9 +196,9 @@ model = model.cuda()
 preprocess = transforms.get_image_transform(model.image_size)
 image = preprocess(Image.open("docs/assets/cat.png")).unsqueeze(0).cuda()
 
-out = model.forward_features(image)  # pass layer_idx=<idx> to get a specific layer's output!
+out = model.forward_features(image, strip_cls_token=True)  # pass layer_idx=<idx> to get a specific layer's output!
 print(out.shape)
-# torch.Size([1, 1025, 1024])
+# torch.Size([1, 1024, 1024])
 ```
 
 ## Acknowledgement 🙏

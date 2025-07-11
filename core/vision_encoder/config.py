@@ -21,8 +21,6 @@ def fetch_pe_checkpoint(name: str, path: Optional[str] = None):
         path = path[len("hf://"):]
         repo, file = path.split(":")
 
-        # To count the download, config.yaml is empty
-        hf_hub_download(repo_id=repo, filename="config.yaml")
         return hf_hub_download(repo_id=repo, filename=file)
     else:
         return path
@@ -136,6 +134,42 @@ PE_TEXT_CONFIG["PE-Core-B16-224"] = PE_TEXT_CONFIG["PE-Core-L14-336"]
 
 
 
+PE_VISION_CONFIG["PE-Core-S16-384"] = PEConfig(
+    image_size=384,
+    patch_size=16,
+    width=384,
+    layers=12,
+    heads=6,
+    mlp_ratio=4.0,
+    pool_type="attn",
+    output_dim=512,
+    use_cls_token=True,
+)
+PE_TEXT_CONFIG["PE-Core-S16-384"] = PETextConfig(
+    context_length=32,
+    width=512,
+    heads=8,
+    layers=12,
+    output_dim=512
+)
+
+
+
+PE_VISION_CONFIG["PE-Core-T16-384"] = PEConfig(
+    image_size=384,
+    patch_size=16,
+    width=192,
+    layers=12,
+    heads=3,
+    mlp_ratio=4.0,
+    pool_type="attn",
+    output_dim=512,
+    use_cls_token=True,
+)
+PE_TEXT_CONFIG["PE-Core-T16-384"] = PE_TEXT_CONFIG["PE-Core-S16-384"]
+
+
+
 
 
 
@@ -165,6 +199,17 @@ PE_VISION_CONFIG["PE-Lang-L14-448"] = replace(
 )
 
 
+# Stage 2 checkpoints for PLM-8B and PLM-3B respectively. Pretrained with tiling.
+# Use these checkpoints if you're building a model that uses tiling downstream!
+PE_VISION_CONFIG["PE-Lang-G14-448-Tiling"] = PE_VISION_CONFIG["PE-Lang-G14-448"]
+PE_VISION_CONFIG["PE-Lang-L14-448-Tiling"] = PE_VISION_CONFIG["PE-Lang-L14-448"]
+
+
+
+
+
+
+
 
 #########################################
 #               PE Spatial              #
@@ -177,4 +222,40 @@ PE_VISION_CONFIG["PE-Spatial-G14-448"] = replace(
     use_ln_post=False,
     output_dim=None,
     ls_init_value=0.1,
+)
+
+# No layerscale on the smaller spatial models
+PE_VISION_CONFIG["PE-Spatial-L14-448"] = replace(
+    PE_VISION_CONFIG["PE-Core-L14-336"],
+    image_size=448,
+    pool_type="none",
+    use_ln_post=False,
+    output_dim=None,
+)
+
+
+PE_VISION_CONFIG["PE-Spatial-B16-512"] = replace(
+    PE_VISION_CONFIG["PE-Core-B16-224"],
+    image_size=512,
+    pool_type="none",
+    use_ln_post=False,
+    output_dim=None,
+)
+
+
+PE_VISION_CONFIG["PE-Spatial-S16-512"] = replace(
+    PE_VISION_CONFIG["PE-Core-S16-384"],
+    image_size=512,
+    pool_type="none",
+    use_ln_post=False,
+    output_dim=None,
+)
+
+
+PE_VISION_CONFIG["PE-Spatial-T16-512"] = replace(
+    PE_VISION_CONFIG["PE-Core-T16-384"],
+    image_size=512,
+    pool_type="none",
+    use_ln_post=False,
+    output_dim=None,
 )
