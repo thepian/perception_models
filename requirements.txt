@@ -17,7 +17,7 @@ pillow==11.0.0
 pyahocorasick==2.1.0
 iopath==0.1.10
 torchdata==0.11.0
-torchcodec==0.1.0
+torchcodec
 timm==1.0.15
 decord==0.6.0
 opencv-python==4.11.0.86

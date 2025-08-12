@@ -1,2 +1,0 @@
-include core/vision_encoder/bpe_simple_vocab_16e6.txt.gz
-global-include *.yaml
