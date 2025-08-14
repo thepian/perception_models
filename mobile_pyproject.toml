@@ -1,0 +1,125 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "perception-models-mobile"
+version = "0.1.0"
+description = "PE Core Mobile Deployment with PyTorch 2.8 + ExecuTorch 0.7.0"
+readme = "README.md"
+requires-python = ">=3.10,<3.13"  # ExecuTorch requirement
+authors = [
+    {name = "Henrik Vendelbo", email = "hvendelbo@gmail.com"},
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    # PyTorch 2.8 stack for ExecuTorch compatibility
+    "torch>=2.8.0",
+    "torchvision>=0.23.0", 
+    "torchaudio>=2.8.0",
+    
+    # Core scientific computing (ExecuTorch requires numpy 2.0+)
+    "numpy>=2.0.0",
+    "pillow>=10,<11",
+    "scipy>=1.11.0",
+    
+    # PE Core model utilities
+    "einops>=0.8.0",
+    "timm>=0.9.0",
+    "omegaconf>=2.3.0",
+    "huggingface-hub>=0.20.0",
+    "requests>=2.31.0",
+    "tqdm>=4.64.0",
+]
+
+[project.optional-dependencies]
+# ExecuTorch mobile deployment
+executorch = [
+    "executorch>=0.7.0; python_version >= '3.10' and python_version < '3.13'",
+    "onnx>=1.15.0",
+    "onnxruntime>=1.16.0",
+]
+
+# iOS-specific dependencies
+ios = [
+    "coremltools>=8.0; platform_system == 'Darwin'",
+    "executorch>=0.7.0; python_version >= '3.10' and python_version < '3.13' and platform_system == 'Darwin'",
+    "onnx>=1.15.0",
+]
+
+# Development dependencies
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=22.0.0",
+    "isort>=5.10.0",
+    "ruff>=0.1.0",
+    "mypy>=0.991",
+    "ipython>=8.0.0",
+    "jupyter>=1.0.0",
+    "matplotlib>=3.5.0",
+    "seaborn>=0.11.0",
+]
+
+# Benchmarking dependencies
+benchmark = [
+    "psutil>=5.9.0",
+    "memory-profiler>=0.60.0",
+    "py-cpuinfo>=9.0.0",
+]
+
+# Complete installation with all features
+all = [
+    "perception-models-mobile[executorch,ios,dev,benchmark]"
+]
+
+[project.urls]
+Homepage = "https://github.com/facebookresearch/perception_models"
+Repository = "https://github.com/facebookresearch/perception_models"
+
+[project.scripts]
+pe-mobile-convert = "perception_models.tools.convert_executorch:main"
+pe-mobile-test = "perception_models.tools.test_mobile_inference:main"
+pe-onnx-bridge = "perception_models.tools.onnx_to_executorch:main"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["perception_models"]
+
+# Black code formatting (match Franca's settings)
+[tool.black]
+line-length = 127
+target-version = ['py310', 'py311', 'py312']
+include = '\.py?$'
+
+[tool.isort]
+atomic = true
+profile = "black"
+line_length = 127
+skip_gitignore = true
+
+# UV-specific configuration
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0", 
+    "black>=22.0.0",
+    "isort>=5.10.0",
+    "ruff>=0.1.0",
+    "mypy>=0.991",
+    "ipython>=8.0.0",
+    "jupyter>=1.0.0",
+    "matplotlib>=3.5.0",
+    "seaborn>=0.11.0",
+]
+
+# Ensure uv resolves this repository's local package
+[tool.uv.sources]
+perception-models-mobile = { path = ".", editable = true }

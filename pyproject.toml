@@ -1,0 +1,270 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "perception-models"
+version = "0.1.0"
+description = "Facebook's Perception Encoder models with mobile deployment capabilities"
+readme = "README.md"
+requires-python = ">=3.10,<3.13"  # Match Franca and ExecuTorch requirements
+license = {text = "MIT"}
+authors = [
+    {name = "Meta Research", email = "research@meta.com"},
+    {name = "Henrik Vendelbo", email = "hvendelbo@gmail.com"},
+]
+keywords = ["computer-vision", "machine-learning", "mobile-ai", "coreml", "ios"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+dependencies = [
+    # Core ML/AI dependencies - aligned with Franca for compatibility
+    "torch>=2.2.0,<2.3.0",  # Match Franca's PyTorch 2.2.x for compatibility
+    "torchvision>=0.17.0,<0.18.0",  # Match Franca's torchvision version
+    "numpy>=1.26,<2.0",  # Match Franca's numpy version
+    "pillow>=10,<11",  # Match Franca for image processing
+    
+    # Model utilities
+    "timm>=0.9.0",
+    "einops>=0.6.0",
+    "omegaconf>=2.3.0",
+    
+    # Data processing
+    "opencv-python>=4.8.0",
+    "scipy>=1.9.0",
+    "scikit-learn>=1.1.0",
+    
+    # Utilities
+    "tqdm>=4.64.0",
+    "requests>=2.28.0",
+    "huggingface-hub>=0.16.0",
+]
+
+[project.optional-dependencies]
+# CoreML export dependencies for iOS deployment
+coreml = [
+    "coremltools>=7.0",
+    "onnx>=1.14.0",
+    "onnxruntime>=1.15.0",
+    "protobuf>=3.20.0",
+]
+
+# Mobile optimization dependencies
+mobile = [
+    "coremltools>=8.0",
+    "onnx>=1.15.0",
+    "onnxruntime>=1.15.0",
+]
+
+# ExecuTorch mobile deployment (compatible with PyTorch 2.2)
+executorch = [
+    "executorch>=0.4.0,<0.7.0; python_version >= '3.10' and python_version < '3.13'",
+    "onnx>=1.15.0",
+]
+
+# iOS-specific dependencies (following Franca's pattern)
+ios = [
+    "coremltools>=8.0; platform_system == 'Darwin'",
+    "executorch>=0.4.0,<0.7.0; python_version >= '3.10' and python_version < '3.13' and platform_system == 'Darwin'",
+    "onnx>=1.15.0",
+]
+
+# Development dependencies
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=22.0.0",
+    "isort>=5.10.0",
+    "flake8>=5.0.0",
+    "mypy>=0.991",
+    "pre-commit>=2.20.0",
+]
+
+# Benchmarking dependencies
+benchmark = [
+    "psutil>=5.9.0",
+    "memory-profiler>=0.60.0",
+    "py-cpuinfo>=9.0.0",
+    "matplotlib>=3.5.0",
+    "seaborn>=0.11.0",
+    "pandas>=1.5.0",
+]
+
+# Complete installation with all features
+all = [
+    "perception-models[coreml,mobile,executorch,ios,dev,benchmark]"
+]
+
+[project.urls]
+Homepage = "https://github.com/facebookresearch/perception_models"
+Repository = "https://github.com/facebookresearch/perception_models"
+Documentation = "https://github.com/facebookresearch/perception_models/blob/main/README.md"
+"Bug Tracker" = "https://github.com/facebookresearch/perception_models/issues"
+
+[project.scripts]
+pe-convert = "perception_models.tools.convert:main"
+pe-benchmark = "perception_models.tools.benchmark:main"
+pe-demo = "perception_models.tools.demo:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["core*", "apps*", "perception_models*"]
+exclude = ["tests*", "scripts*", "docs*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.yaml", "*.yml", "*.json", "*.txt"]
+
+# Black code formatting
+[tool.black]
+line-length = 88
+target-version = ['py310', 'py311', 'py312']  # Match supported Python versions
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+# isort import sorting
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["core", "apps", "perception_models"]
+known_third_party = ["torch", "torchvision", "numpy", "PIL", "cv2", "coremltools"]
+
+# pytest configuration
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov=core",
+    "--cov=apps",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "gpu: marks tests that require GPU",
+    "coreml: marks tests that require CoreML",
+    "mobile: marks tests for mobile deployment",
+]
+
+# mypy type checking
+[tool.mypy]
+python_version = "3.10"  # Match minimum required Python version
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "torch.*",
+    "torchvision.*",
+    "coremltools.*",
+    "onnx.*",
+    "onnxruntime.*",
+    "cv2.*",
+    "timm.*",
+    "einops.*",
+]
+ignore_missing_imports = true
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["core", "apps"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__init__.py",
+    "*/setup.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+# Ruff linting (alternative to flake8)
+[tool.ruff]
+target-version = "py310"  # Match minimum Python version
+line-length = 88
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/*" = ["B011"]
+
+# UV-specific configuration
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=22.0.0",
+    "isort>=5.10.0",
+    "ruff>=0.1.0",
+    "mypy>=0.991",
+    "pre-commit>=2.20.0",
+    "ipython>=8.0.0",
+    "jupyter>=1.0.0",
+    "matplotlib>=3.5.0",
+    "seaborn>=0.11.0",
+]
+
+[tool.uv.workspace]
+members = ["mobile_deployment"]

@@ -1,0 +1,77 @@
+# Mobile Deployment Environment Configuration
+# PyTorch 2.8 + ExecuTorch 0.7.0 for PE Core Mobile Deployment
+#
+# Usage:
+#   conda env create -f mobile_environment.yml
+#   conda activate pe-core-mobile
+
+name: pe-core-mobile
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+
+dependencies:
+  # Python version compatible with both PyTorch 2.8 and ExecuTorch 0.7.0
+  - python=3.11
+
+  # Core PyTorch stack (will install 2.8 via pip)
+  # Note: PyTorch 2.8 not yet available in conda, using pip instead
+
+  # Core scientific computing
+  - numpy>=1.26,<2.0
+  - scipy>=1.11.0
+  - pillow>=10.0.0
+
+  # Mobile deployment essentials
+  - onnx>=1.15.0
+  - onnxruntime>=1.16.0
+
+  # Development tools
+  - pip
+  - jupyter
+  - ipython
+  - matplotlib
+  - seaborn
+
+  # Build tools for ExecuTorch
+  - cmake>=3.29
+  - ninja
+  - git
+
+  # Additional utilities
+  - tqdm
+  - requests
+  - huggingface_hub
+
+  # Pip dependencies (installed after conda environment)
+  - pip:
+    # PyTorch 2.8 stack (not available in conda yet)
+    - torch>=2.8.0
+    - torchvision>=0.23.0
+    - torchaudio>=2.8.0
+
+    # ExecuTorch 0.7.0 - latest mobile deployment framework
+    - executorch==0.7.0
+    
+    # PE Core model utilities
+    - einops>=0.8.0
+    - timm>=0.9.0
+    - omegaconf>=2.3.0
+    
+    # Mobile optimization tools
+    - coremltools>=8.0  # For iOS deployment comparison
+    
+    # Development and testing
+    - pytest>=7.0.0
+    - black>=22.0.0
+    - isort>=5.10.0
+    - mypy>=0.991
+    
+    # Performance monitoring
+    - psutil>=5.9.0
+    - memory-profiler>=0.60.0
+    
+    # Additional mobile deployment tools
+    - protobuf>=3.20.0
