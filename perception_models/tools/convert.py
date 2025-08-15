@@ -114,16 +114,35 @@ class CoreMLConverter:
                 self.pe_model = pe_model
                 self.input_size = input_size
 
-                # Pre-compute fixed values to avoid dynamic operations
-                self.register_buffer('dummy_input', torch.randn(1, 3, input_size, input_size))
+                # Establish initial device from model params if available; default to CPU
+                try:
+                    init_device = next(pe_model.parameters()).device
+                except StopIteration:
+                    init_device = torch.device('cpu')
+
+                # Pre-compute fixed values to avoid dynamic operations, on the model's current device
+                self.register_buffer('dummy_input', torch.randn(1, 3, input_size, input_size, device=init_device))
 
                 # Set model to eval mode and disable dynamic behavior
                 self.pe_model.eval()
 
             def forward(self, x):
+                # Remember original input device to return results consistently
+                orig_device = x.device
+
+                # Always align input to the pe_model's current device (in case only inner model was moved)
+                try:
+                    current_device = next(self.pe_model.parameters()).device
+                except StopIteration:
+                    current_device = self.dummy_input.device
+                if x.device != current_device:
+                    x = x.to(current_device, non_blocking=True)
+
                 # Ensure input is the expected size
                 if x.shape != self.dummy_input.shape:
-                    x = torch.nn.functional.interpolate(x, size=(self.input_size, self.input_size), mode='bilinear', align_corners=False)
+                    x = torch.nn.functional.interpolate(
+                        x, size=(self.input_size, self.input_size), mode='bilinear', align_corners=False
+                    )
 
                 # Forward through PE model
                 features = self.pe_model(x)
@@ -131,6 +150,10 @@ class CoreMLConverter:
                 # Ensure output is 2D for mobile deployment
                 if len(features.shape) > 2:
                     features = features.view(features.shape[0], -1)
+
+                # Move features back to the original input device if different
+                if features.device != orig_device:
+                    features = features.to(orig_device, non_blocking=True)
 
                 return features
 

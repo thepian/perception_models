@@ -7,7 +7,7 @@ name = "perception-models"
 version = "0.1.0"
 description = "Facebook's Perception Encoder models with mobile deployment capabilities"
 readme = "README.md"
-requires-python = ">=3.10,<3.13"  # Match Franca and ExecuTorch requirements
+requires-python = ">=3.12,<3.13"  # Target Python 3.12 for this project
 license = {text = "MIT"}
 authors = [
     {name = "Meta Research", email = "research@meta.com"},
@@ -30,8 +30,8 @@ classifiers = [
 
 dependencies = [
     # Core ML/AI dependencies - aligned with Franca for compatibility
-    "torch>=2.2.0,<2.3.0",  # Match Franca's PyTorch 2.2.x for compatibility
-    "torchvision>=0.17.0,<0.18.0",  # Match Franca's torchvision version
+    "torch==2.4.*",  # Target PyTorch 2.4.x for macOS/Darwin with MPS
+    "torchvision==0.19.*",  # Matching torchvision for torch 2.4
     "numpy>=1.26,<2.0",  # Match Franca's numpy version
     "pillow>=10,<11",  # Match Franca for image processing
     
@@ -67,16 +67,45 @@ mobile = [
     "onnxruntime>=1.15.0",
 ]
 
-# ExecuTorch mobile deployment (compatible with PyTorch 2.2)
-executorch = [
-    "executorch>=0.4.0,<0.7.0; python_version >= '3.10' and python_version < '3.13'",
+# ExecuTorch optional profiles (decoupled from base torch/torchvision)
+# Use these extras explicitly when you want ExecuTorch, to pull a matching torch/torchvision stack.
+executorch_04 = [
+    "executorch==0.4.0",
+    "torch==2.5.*",
+    "torchvision==0.20.*",
+    "torchaudio==2.5.*",
     "onnx>=1.15.0",
 ]
 
-# iOS-specific dependencies (following Franca's pattern)
+executorch_05 = [
+    "executorch==0.5.0",
+    "torch==2.6.*",
+    "torchvision==0.21.*",
+    "torchaudio==2.6.*",
+    "onnx>=1.15.0",
+]
+
+executorch_06 = [
+    "executorch==0.6.0",
+    "torch==2.7.*",
+    "torchvision==0.22.*",
+    "torchaudio==2.7.*",
+    "onnx>=1.15.0",
+]
+
+# ExecuTorch 0.7 tracks torch 2.8+ and numpy>=2; consider using on Linux/CI until macOS wheels are available
+executorch_07 = [
+    "executorch==0.7.0",
+    "torch>=2.8.0",
+    "torchvision>=0.23.0",
+    "torchaudio>=2.8.0",
+    "numpy>=2.0.0",
+    "onnx>=1.15.0",
+]
+
+# iOS-specific dependencies (CoreML/ONNX only; ExecuTorch via separate executorch_* extras)
 ios = [
     "coremltools>=8.0; platform_system == 'Darwin'",
-    "executorch>=0.4.0,<0.7.0; python_version >= '3.10' and python_version < '3.13' and platform_system == 'Darwin'",
     "onnx>=1.15.0",
 ]
 
@@ -128,7 +157,7 @@ exclude = ["tests*", "scripts*", "docs*"]
 # Black code formatting
 [tool.black]
 line-length = 88
-target-version = ['py310', 'py311', 'py312']  # Match supported Python versions
+target-version = ['py312']  # Target Python 3.12
 include = '\.pyi?$'
 extend-exclude = '''
 /(
@@ -176,7 +205,7 @@ markers = [
 
 # mypy type checking
 [tool.mypy]
-python_version = "3.10"  # Match minimum required Python version
+python_version = "3.12"  # Target Python 3.12 for this project
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
@@ -229,7 +258,7 @@ exclude_lines = [
 
 # Ruff linting (alternative to flake8)
 [tool.ruff]
-target-version = "py310"  # Match minimum Python version
+target-version = "py312"  # Target Python 3.12
 line-length = 88
 select = [
     "E",  # pycodestyle errors
@@ -252,6 +281,7 @@ ignore = [
 
 # UV-specific configuration
 [tool.uv]
+environments = ["sys_platform == 'darwin'"]
 dev-dependencies = [
     "pytest>=7.0.0",
     "pytest-cov>=4.0.0",
