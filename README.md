@@ -11,6 +11,7 @@ This repo is the home to the state-of-the-art for image and video _perception_: 
 > [Perception Language Model](#perception-language-model-plm)
 
 ## Updates 
+* **[Aug-15-25]:** Added comprehensive [iOS integration documentation](apps/ios/docs/) and [mobile deployment guides](docs/MOBILE_DEPLOYMENT.md) for PE Core models. Recommended: **PE-Core-S16-384** for optimal mobile performance (25ms latency, 72.7% accuracy). :fire::fire:
 * **[Jul-14-25]:** PerceptionLM is now available in [Hugging Face transformers](https://huggingface.co/docs/transformers/main/en/model_doc/perception_lm). :fire::fire:
 * **[Jul-11-25]:** We have release 8 new checkpoints for [Perception Encoder](apps/pe/README.md): 2x small core models (T and S), 2x tiling-tuned lang models (G and L), and 4x smaller spatial models (L, B, S, T). Give them a try! :fire::fire::fire:
 * **[May-28-25]:** Perception Encoder has been integrated into [timm](https://github.com/huggingface/pytorch-image-models)! :fire::fire:

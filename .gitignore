@@ -8,3 +8,5 @@ torchinductor_*/*
 tmp*/*
 apps/plm/dummy_datasets
 /perception_models.egg-info
+/notebooks/cifar_data
+/coreml_models

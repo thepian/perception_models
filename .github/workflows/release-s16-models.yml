@@ -1,0 +1,387 @@
+name: Release PE-Core-S16-384 Models
+
+on:
+  push:
+    tags:
+      - 'v*'  # Triggered on version tags like v1.0.0
+  workflow_dispatch:  # Allow manual triggering
+    inputs:
+      model_version:
+        description: 'Model version to release (e.g., v1.0.0, v1.1.0-beta)'
+        required: true
+        default: 'v1.0.0'
+        type: string
+      include_formats:
+        description: 'Model formats to include in the release'
+        required: true
+        default: 'coreml,onnx,executorch'
+        type: choice
+        options:
+          - 'coreml'
+          - 'onnx'
+          - 'executorch'
+          - 'coreml,onnx'
+          - 'coreml,executorch'
+          - 'onnx,executorch'
+          - 'coreml,onnx,executorch'
+      create_release:
+        description: 'Create GitHub release (uncheck for testing)'
+        required: false
+        default: true
+        type: boolean
+      run_benchmarks:
+        description: 'Run performance benchmarks (takes longer)'
+        required: false
+        default: true
+        type: boolean
+      release_type:
+        description: 'Type of release'
+        required: false
+        default: 'release'
+        type: choice
+        options:
+          - 'release'
+          - 'prerelease'
+          - 'draft'
+
+env:
+  MODEL_NAME: PE-Core-S16-384
+  PYTHON_VERSION: '3.12'
+  PYTORCH_VERSION: '2.4.1'
+
+jobs:
+  convert-and-release:
+    runs-on: macos-14  # Use macOS for CoreML support
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        lfs: true
+    
+    - name: Set up Python and uv
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install uv
+      run: curl -LsSf https://astral.sh/uv/install.sh | sh
+    
+    - name: Add uv to PATH
+      run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+    
+    - name: Set release configuration
+      id: config
+      run: |
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          echo "VERSION=${{ github.event.inputs.model_version }}" >> $GITHUB_OUTPUT
+          echo "FORMATS=${{ github.event.inputs.include_formats }}" >> $GITHUB_OUTPUT
+          echo "CREATE_RELEASE=${{ github.event.inputs.create_release }}" >> $GITHUB_OUTPUT
+          echo "RUN_BENCHMARKS=${{ github.event.inputs.run_benchmarks }}" >> $GITHUB_OUTPUT
+          echo "RELEASE_TYPE=${{ github.event.inputs.release_type }}" >> $GITHUB_OUTPUT
+        else
+          echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          echo "FORMATS=coreml,onnx,executorch" >> $GITHUB_OUTPUT
+          echo "CREATE_RELEASE=true" >> $GITHUB_OUTPUT
+          echo "RUN_BENCHMARKS=true" >> $GITHUB_OUTPUT
+          echo "RELEASE_TYPE=release" >> $GITHUB_OUTPUT
+        fi
+        
+        # Validate inputs
+        echo "🔍 Validating inputs..."
+        
+        # Get values for validation
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          VERSION="${{ github.event.inputs.model_version }}"
+          FORMATS="${{ github.event.inputs.include_formats }}"
+        else
+          VERSION="${GITHUB_REF#refs/tags/}"
+          FORMATS="coreml,onnx,executorch"
+        fi
+        
+        # Validate version format (should start with 'v' and have semantic version)
+        if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+.*$ ]]; then
+          echo "❌ Invalid version format: $VERSION"
+          echo "Expected format: v1.0.0, v1.1.0-beta, etc."
+          exit 1
+        fi
+        
+        # Validate formats
+        IFS=',' read -ra FORMAT_ARRAY <<< "$FORMATS"
+        for format in "${FORMAT_ARRAY[@]}"; do
+          format=$(echo "$format" | tr -d ' ')  # Remove spaces
+          if [[ ! "$format" =~ ^(coreml|onnx|executorch)$ ]]; then
+            echo "❌ Invalid format: '$format'"
+            echo "Valid formats: coreml, onnx, executorch"
+            exit 1
+          fi
+        done
+        
+        echo "✅ Input validation passed"
+        
+        # Log configuration for debugging
+        echo "🔧 Release Configuration:"
+        echo "  Version: ${{ github.event.inputs.model_version || 'from tag' }}"
+        echo "  Formats: ${{ github.event.inputs.include_formats || 'all' }}"
+        echo "  Create Release: ${{ github.event.inputs.create_release || 'true' }}"
+        echo "  Run Benchmarks: ${{ github.event.inputs.run_benchmarks || 'true' }}"
+        echo "  Release Type: ${{ github.event.inputs.release_type || 'release' }}"
+    
+    - name: Cache uv dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/uv
+          .venv
+        key: ${{ runner.os }}-uv-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('uv.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-uv-
+    
+    - name: Create virtual environment and install dependencies
+      run: |
+        # Create virtual environment and activate it
+        uv venv
+        echo "VIRTUAL_ENV=$PWD/.venv" >> $GITHUB_ENV
+        echo "$PWD/.venv/bin" >> $GITHUB_PATH
+        
+        # Install base dependencies (PyTorch 2.4.x from pyproject.toml)
+        # Using uv for faster, more reliable dependency resolution
+        uv pip install -e ".[dev]"
+        
+        # Install optional dependencies based on formats
+        if [[ "${{ steps.config.outputs.FORMATS }}" == *"coreml"* ]]; then
+          uv pip install ".[mobile]"  # Includes coremltools>=8.0
+        fi
+        
+        if [[ "${{ steps.config.outputs.FORMATS }}" == *"onnx"* ]]; then
+          uv pip install "onnx>=1.15.0"
+        fi
+        
+        if [[ "${{ steps.config.outputs.FORMATS }}" == *"executorch"* ]]; then
+          # Install specific ExecuTorch version that matches our PyTorch
+          uv pip install ".[executorch_04]" || echo "ExecuTorch not available, will skip"
+        fi
+    
+    - name: Create output directory
+      run: |
+        mkdir -p dist/models
+        mkdir -p dist/checksums
+    
+    - name: Convert models
+      run: |
+        python scripts/convert_s16_models.py \
+          --model-name ${{ env.MODEL_NAME }} \
+          --formats ${{ steps.config.outputs.FORMATS }} \
+          --output-dir dist/models \
+          --version ${{ steps.config.outputs.VERSION }}
+    
+    - name: Generate checksums
+      run: |
+        cd dist/models
+        find . -name "*.mlpackage" -o -name "*.onnx" -o -name "*.pte" | while read file; do
+          shasum -a 256 "$file" > "../checksums/$(basename "$file").sha256"
+        done
+    
+    - name: Create release manifest
+      run: |
+        python scripts/create_release_manifest.py \
+          --model-name ${{ env.MODEL_NAME }} \
+          --version ${{ steps.config.outputs.VERSION }} \
+          --models-dir dist/models \
+          --output dist/release-manifest.json
+    
+    - name: Package models
+      run: |
+        cd dist
+        
+        # Check what files were actually created and only package those
+        echo "📦 Checking generated model files..."
+        find models/ -name "*.mlpackage" -o -name "*.onnx" -o -name "*.pte" | sort
+        
+        # Create individual packages only for successfully converted formats
+        if ls models/*.mlpackage 1> /dev/null 2>&1; then
+          echo "✅ Packaging CoreML models..."
+          tar -czf pe-core-s16-384-coreml-${{ steps.config.outputs.VERSION }}.tar.gz \
+            models/*.mlpackage checksums/*.mlpackage.sha256 2>/dev/null || \
+          tar -czf pe-core-s16-384-coreml-${{ steps.config.outputs.VERSION }}.tar.gz \
+            models/*.mlpackage
+        else
+          echo "⚠️  No CoreML files found, skipping CoreML package"
+        fi
+        
+        if ls models/*.onnx 1> /dev/null 2>&1; then
+          echo "✅ Packaging ONNX models..."
+          tar -czf pe-core-s16-384-onnx-${{ steps.config.outputs.VERSION }}.tar.gz \
+            models/*.onnx checksums/*.onnx.sha256 2>/dev/null || \
+          tar -czf pe-core-s16-384-onnx-${{ steps.config.outputs.VERSION }}.tar.gz \
+            models/*.onnx
+        else
+          echo "⚠️  No ONNX files found, skipping ONNX package"
+        fi
+        
+        if ls models/*.pte 1> /dev/null 2>&1; then
+          echo "✅ Packaging ExecuTorch models..."
+          tar -czf pe-core-s16-384-executorch-${{ steps.config.outputs.VERSION }}.tar.gz \
+            models/*.pte checksums/*.pte.sha256 2>/dev/null || \
+          tar -czf pe-core-s16-384-executorch-${{ steps.config.outputs.VERSION }}.tar.gz \
+            models/*.pte
+        else
+          echo "⚠️  No ExecuTorch files found, skipping ExecuTorch package"
+        fi
+        
+        # Create complete package with all successfully converted models
+        echo "📦 Creating complete package with all available models..."
+        tar -czf pe-core-s16-384-complete-${{ steps.config.outputs.VERSION }}.tar.gz \
+          models/ checksums/ release-manifest.json
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: pe-core-s16-384-models-${{ steps.config.outputs.VERSION }}
+        path: |
+          dist/*.tar.gz
+          dist/release-manifest.json
+        retention-days: 30
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      if: (startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch') && steps.config.outputs.CREATE_RELEASE == 'true'
+      with:
+        tag_name: ${{ steps.config.outputs.VERSION }}
+        name: PE-Core-S16-384 Models ${{ steps.config.outputs.VERSION }}
+        draft: ${{ steps.config.outputs.RELEASE_TYPE == 'draft' }}
+        prerelease: ${{ steps.config.outputs.RELEASE_TYPE == 'prerelease' }}
+        body: |
+          # PE-Core-S16-384 Model Release ${{ steps.config.outputs.VERSION }}
+          
+          ## 🚀 Mobile-Optimized Vision Encoder
+          
+          **Performance**: 20-25ms latency | **Accuracy**: 72.7% ImageNet-1k | **Memory**: ~200MB
+          
+          ## 📦 Available Formats
+          
+          This release includes the following model formats (availability depends on successful conversion):
+          
+          - **CoreML (.mlpackage)**: Native iOS deployment with automatic hardware optimization
+          - **ONNX (.onnx)**: Cross-platform deployment and conversion  
+          - **ExecuTorch (.pte)**: PyTorch mobile runtime with ARM optimization
+          
+          > **Note**: Some formats may not be available if conversion fails due to model complexity. 
+          > Check the workflow logs for details on which formats were successfully converted.
+          
+          ## 📱 Recommended for
+          
+          - Real-time mobile applications (30+ FPS)
+          - iOS apps requiring balanced accuracy/performance
+          - Cross-platform vision applications
+          - Production mobile deployment
+          
+          ## 🔧 Usage
+          
+          ### iOS (CoreML)
+          ```swift
+          let model = try MLModel(contentsOf: modelURL)
+          let coreMLModel = try VNCoreMLModel(for: model)
+          ```
+          
+          ### PyTorch (ONNX/ExecuTorch)
+          ```python
+          # ONNX
+          import onnxruntime as ort
+          session = ort.InferenceSession("pe_core_s16_384.onnx")
+          
+          # ExecuTorch
+          from executorch.extension.pybindings.portable_lib import _load_for_executorch
+          model = _load_for_executorch("pe_core_s16_384.pte")
+          ```
+          
+          ## 📋 Model Specifications
+          
+          - **Input Size**: 384×384 pixels
+          - **Output**: 512-dimensional embeddings
+          - **Architecture**: Vision Transformer (S/16)
+          - **Parameters**: ~48M
+          - **Quantization**: FP16, INT8 variants available
+          
+          ## 📖 Documentation
+          
+          - [Mobile Deployment Guide](https://github.com/${{ github.repository }}/blob/main/docs/MOBILE_DEPLOYMENT.md)
+          - [iOS Integration Examples](https://github.com/${{ github.repository }}/tree/main/apps/ios/docs)
+          - [Model Architecture](https://github.com/${{ github.repository }}/blob/main/apps/pe/README.md)
+          
+          ## ✅ Verification
+          
+          All model files include SHA256 checksums for integrity verification.
+          
+          
+          Generated with PyTorch ${{ env.PYTORCH_VERSION }} on ${{ runner.os }}
+        files: |
+          dist/*.tar.gz
+          dist/release-manifest.json
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Upload to package registry (optional)
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+      run: |
+        # Optional: Upload to GitHub Packages or other registries
+        echo "Package upload would happen here"
+        echo "Consider uploading to:"
+        echo "- GitHub Packages"
+        echo "- Hugging Face Model Hub"
+        echo "- Custom CDN/S3 bucket"
+
+  test-models:
+    needs: convert-and-release
+    runs-on: macos-14
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.run_benchmarks == 'true'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Set up Python and uv
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Install uv
+      run: curl -LsSf https://astral.sh/uv/install.sh | sh
+    
+    - name: Add uv to PATH
+      run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+    
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: pe-core-s16-384-models-${{ github.event.inputs.model_version }}
+        path: dist/
+    
+    - name: Create virtual environment and install test dependencies
+      run: |
+        # Create virtual environment and activate it
+        uv venv
+        echo "VIRTUAL_ENV=$PWD/.venv" >> $GITHUB_ENV
+        echo "$PWD/.venv/bin" >> $GITHUB_PATH
+        uv pip install -e ".[dev,mobile]"
+    
+    - name: Test model loading
+      run: |
+        python scripts/test_converted_models.py \
+          --models-dir dist/ \
+          --model-name ${{ env.MODEL_NAME }}
+    
+    - name: Performance benchmark
+      run: |
+        python scripts/benchmark_s16_models.py \
+          --models-dir dist/ \
+          --iterations 10 \
+          --report-file dist/benchmark-report.json
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-${{ github.event.inputs.model_version }}
+        path: |
+          dist/benchmark-report.json
+        retention-days: 7
